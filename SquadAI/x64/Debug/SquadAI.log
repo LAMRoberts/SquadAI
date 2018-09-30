@@ -1,0 +1,3 @@
+﻿C:\Users\Luke\Desktop\Y3\AT\SquadAI\SquadAI\SquadAI\trianglePixelShader.hlsl(7,26-36): error X4502: invalid vs_2_0 output semantic 'SV_TARGET'
+  
+  compilation failed; no code produced

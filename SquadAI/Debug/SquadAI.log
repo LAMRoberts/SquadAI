@@ -1,0 +1,10 @@
+﻿  compilation object save succeeded; see G:\UWE\AT\SquadAI\SquadAI\trianglePixelShader.cso
+  compilation object save succeeded; see G:\UWE\AT\SquadAI\SquadAI\triangleVertexShader.cso
+  main.cpp
+  Renderer.cpp
+  Triangle.cpp
+g:\uwe\at\squadai\squadai\triangle.cpp(19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Window.cpp
+  Generating Code...
+  LINK : G:\UWE\AT\SquadAI\Debug\SquadAI.exe not found or not built by the last incremental link; performing full link
+  SquadAI.vcxproj -> G:\UWE\AT\SquadAI\Debug\SquadAI.exe
