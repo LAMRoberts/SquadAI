@@ -1,9 +1,18 @@
 #include "Renderer.h"
 
-Renderer::Renderer(Window& window)
+Renderer::Renderer(Window& window, float clearColour[4])
 {
+	setClearColour(clearColour);
 	createDevice(window);
 	createRenderTarget();
+}
+
+void Renderer::setClearColour(float clearColour[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		backgroundColour[i] = clearColour[i];
+	}
 }
 
 void Renderer::createDevice(Window& window) 
@@ -26,11 +35,10 @@ void Renderer::createDevice(Window& window)
 	// check for errors
 	if (CDSCresult != S_OK)
 	{
-		MessageBox(nullptr, "Problem creating device and swap chain", "Error", MB_OK);
+		MessageBox(nullptr, "Problem creating with D3D init", "Error", MB_OK);
 		exit(0);
 	}
 }
-
 
 void Renderer::createRenderTarget()
 {
@@ -64,8 +72,7 @@ void Renderer::beginFrame()
 	m_deviceContext->RSSetViewports(1, &viewport);
 
 	// set background colour
-	float clearColour[] = { 0.25f, 0.5f, 1.0f, 1.0f };
-	m_deviceContext->ClearRenderTargetView(m_renderTargetView, clearColour);
+	m_deviceContext->ClearRenderTargetView(m_renderTargetView, backgroundColour);
 }
 
 // swap frame buffers

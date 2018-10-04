@@ -7,10 +7,11 @@
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
 	//create window
-	Window window(800, 600);
+	Window window(800, 800);
 
 	//create renderer and init D3D
-	Renderer renderer(window);
+	float clearColour[] = { 0.2f, 0.3f, 0.5f, 1.0f };
+	Renderer renderer(window, clearColour);
 
 	// create triangle
 	Triangle triangle(renderer);

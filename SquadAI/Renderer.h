@@ -5,7 +5,9 @@
 class  Renderer
 {
 public:
-	Renderer(Window& window);
+	Renderer(Window& window, float clearColour[4]);
+
+	void setClearColour(float clearColour[4]);
 
 	void beginFrame();		// starts the frame clear
 	void endFrame();		// swap frame buffers
@@ -17,6 +19,8 @@ private:
 
 	void createDevice(Window& window);
 	void createRenderTarget();
+
+	float backgroundColour[4];
 
 	// device members
 	IDXGISwapChain* m_swapChain = nullptr;
