@@ -1,6 +1,13 @@
 #pragma once
 #include <d3d11.h>
+#include <DirectXMath.h>
+
 #include "Window.h"
+
+struct cbPerObject
+{
+	DirectX::XMMATRIX WVP;
+};
 
 class  Renderer
 {
@@ -17,7 +24,11 @@ public:
 	void setRenderTargets();
 	void setViewport();
 
+	void createConstantBuffer();
+
 	void beginFrame();		// starts the frame clear
+	void update();
+	void draw(UINT indexCount);
 	void endFrame();		// swap frame buffers
 
 	ID3D11Device* getDevice();
@@ -41,4 +52,25 @@ private:
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 
 	D3D11_VIEWPORT viewport;
+
+	ID3D11Buffer* cbPerObjectBuffer;
+
+	cbPerObject cbPerObj;
+
+	DirectX::XMMATRIX WVP;
+
+	DirectX::XMMATRIX camView;
+	DirectX::XMMATRIX camProjection;
+
+	DirectX::XMVECTOR camPosition;
+	DirectX::XMVECTOR camTarget;
+	DirectX::XMVECTOR camUp;
+
+	DirectX::XMMATRIX cube1World;
+	DirectX::XMMATRIX cube2World;
+
+	DirectX::XMMATRIX rotation;
+	DirectX::XMMATRIX scale;
+	DirectX::XMMATRIX translation;
+	float rot = 0.01f;
 };

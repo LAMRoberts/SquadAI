@@ -48,17 +48,15 @@ void Cube::createVertexBuffer(Renderer& renderer)
 	// define vertices
 	Vertex vertices[] =
 	{
-		Vertex(0.5f, 0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f, -0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f, 0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
+		Vertex(0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f),
+		Vertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f),
+		Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f),
+		Vertex(-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f),
 
-		Vertex(0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
-		Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
-		Vertex(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
-
-		Vertex(0.5f, 0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
-		Vertex(0.5f, -0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
-		Vertex(-0.5f, 0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
+		Vertex(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
+		Vertex(-0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f),
+		Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f),
 	};
 
 	vertexCount = ARRAYSIZE(vertices);
@@ -94,9 +92,23 @@ void Cube::createIndexBuffer(Renderer& renderer)
 	// define indices
 	unsigned int indices[] = 
 	{ 
+		0, 2, 3,	// front
 		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
+
+		4, 1, 0,	// right
+		4, 5, 1,
+		
+		7, 5, 4,	// back
+		7, 6, 5,
+
+		3, 6, 7,	// left
+		3, 2, 6,
+
+		4, 3, 7,	// top
+		4, 0, 3,
+
+		1, 6, 2,	// bottom
+		1, 5, 6,
 	};
 
 	indexCount = ARRAYSIZE(indices);
@@ -197,13 +209,4 @@ void Cube::createRenderStates(Renderer& renderer)
 		false, 0, 0, 0, 0, false, false, false);
 
 	renderer.getDevice()->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
-}
-
-void Cube::draw(Renderer & renderer)
-{
-	// refresh depth stencil view
-	renderer.getDeviceContext()->ClearDepthStencilView(renderer.getDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	// draw triangle
-	renderer.getDeviceContext()->DrawIndexed(indexCount, 0, 0);
 }

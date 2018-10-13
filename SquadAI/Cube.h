@@ -1,5 +1,4 @@
 #pragma once
-#include <DirectXMath.h>
 #include <vector>
 #include <fstream>
 
@@ -23,10 +22,6 @@ public:
 	UINT getVertexCount();
 	UINT getIndexCount();
 
-	void draw(Renderer& renderer);
-
-private:
-
 	void createVertexBuffer(Renderer & renderer);
 	void createIndexBuffer(Renderer & renderer);
 
@@ -36,6 +31,8 @@ private:
 	void createInputLayout(Renderer & renderer);
 
 	void createRenderStates(Renderer & renderer);
+
+private:
 	
 	ID3D11Buffer* vertexBuffer = nullptr;
 	ID3D11Buffer* indexBuffer = nullptr;

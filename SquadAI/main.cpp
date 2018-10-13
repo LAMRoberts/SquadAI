@@ -17,6 +17,9 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	Cube cube(renderer);
 
 	renderer.setViewport();
+	renderer.createConstantBuffer();
+
+	UINT indices = cube.getIndexCount();
 
 	//create message
 	MSG msg = { 0 };
@@ -24,6 +27,31 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	//main loop
 	while (msg.message != WM_QUIT)
 	{
+		switch (msg.wParam)
+		{
+		case 'a':
+		{
+			break;
+		}
+		case 'd':
+		{
+			break;
+		}
+		case 'w':
+		{
+			break;
+		}
+		case 's':
+		{
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+
+
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
@@ -33,11 +61,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		renderer.beginFrame();
 			// render all the people
 
-		cube.draw(renderer);
+		renderer.update();
+		renderer.draw(indices);
 
 			// people all rendered
 		renderer.endFrame();
-
 	}
 
 	return 0; // exited without a problem
