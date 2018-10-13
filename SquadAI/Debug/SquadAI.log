@@ -1,3 +1,2 @@
-﻿  Triangle.cpp
-c:\users\luke\desktop\y3\at\squadai\squadai\triangle.cpp(15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+﻿  main.cpp
   SquadAI.vcxproj -> C:\Users\Luke\Desktop\Y3\AT\SquadAI\Debug\SquadAI.exe

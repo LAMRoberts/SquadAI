@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include "Window.h"
 #include "Renderer.h"
-#include "Triangle.h"
+#include "Cube.h"
 
 // weird windows version of main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -14,7 +14,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	Renderer renderer(window, clearColour);
 
 	// create triangle
-	Triangle triangle(renderer);
+	Cube cube(renderer);
 
 	//create message
 	MSG msg = { 0 };
@@ -31,7 +31,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		renderer.beginFrame();
 			// render all the people
 
-		triangle.draw(renderer);
+		cube.draw(renderer);
 
 			// people all rendered
 		renderer.endFrame();
