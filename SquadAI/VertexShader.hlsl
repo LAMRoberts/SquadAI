@@ -1,13 +1,13 @@
 struct Input
 {
 	float3 position : POSITION;
-	float3 color : COLOR;
+	float4 color : COLOR;
 };
 
 struct Output
 {
 	float4 position : SV_POSITION;
-	float3 color : COLOR;
+	float4 color : COLOR;
 };
 
 Output main(Input input)

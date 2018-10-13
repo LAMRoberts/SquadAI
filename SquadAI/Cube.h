@@ -7,8 +7,11 @@
 
 struct Vertex
 {
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT3 Col;
+	Vertex() {}
+	Vertex(float x, float y, float z, float r, float g, float b, float a) : position (x,y,z), colour (r,g,b,a) {}
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT4 colour;
 };
 
 class Cube
@@ -20,8 +23,6 @@ public:
 	void draw(Renderer& renderer);
 
 private:
-
-	Vertex createVertex(float x, float y, float z, float r, float g, float b);
 
 	void createVertexBuffer(Renderer & renderer);
 	void createIndexBuffer(Renderer & renderer);

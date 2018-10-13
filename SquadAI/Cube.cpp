@@ -35,29 +35,18 @@ void Cube::draw(Renderer & renderer)
 	renderer.getDeviceContext()->DrawIndexed(6, 0, 0);
 }
 
-Vertex Cube::createVertex(float x, float y, float z, float r, float g, float b)
-{
-	Vertex v =
-	{
-		DirectX::XMFLOAT3(x, y, z),
-		DirectX::XMFLOAT3(r, g, b)
-	};
-
-	return v;
-}
-
 void Cube::createVertexBuffer(Renderer& renderer)
 {
 	// define vertices
 	Vertex vertices[] =
 	{
-		createVertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
-		createVertex(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
-		createVertex(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f),
+		Vertex(0.5f, 0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
+		Vertex(-0.5f, -0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
+		Vertex(-0.5f, 0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
 
-		createVertex(0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f),
-		createVertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f),
-		createVertex(0.5f, 0.5f, 0.0f, 0.0f, 0.5f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
+		Vertex(0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
 	};
 
 	// create vertex buffer
@@ -167,12 +156,12 @@ void Cube::createInputLayout(Renderer & renderer)
 {
 	// define input layouts
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	// create layout
-	auto CILrestult = renderer.getDevice()->CreateInputLayout(layout, 2, vsData.data(), vsData.size(), &m_inputLayout);
+	auto CILrestult = renderer.getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), vsData.data(), vsData.size(), &m_inputLayout);
 
 	// check for errors
 	if (CILrestult != S_OK)
