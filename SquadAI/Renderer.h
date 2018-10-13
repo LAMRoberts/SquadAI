@@ -6,28 +6,39 @@ class  Renderer
 {
 public:
 	Renderer(Window& window, float clearColour[4]);
+	~Renderer();
 
 	void setClearColour(float clearColour[4]);
+
+	void createDevice(Window& window);
+	void createRenderTarget();
+	void createDepthStencilBuffer();
+
+	void setRenderTargets();
+	void setViewport();
 
 	void beginFrame();		// starts the frame clear
 	void endFrame();		// swap frame buffers
 
 	ID3D11Device* getDevice();
 	ID3D11DeviceContext* getDeviceContext();
+	ID3D11DepthStencilView* getDepthStencilView();
 
 private:
 
-	void createDevice(Window& window);
-	void createRenderTarget();
-
 	float backgroundColour[4];
 
-	// device members
-	IDXGISwapChain* m_swapChain = nullptr;
-	ID3D11Device* m_device = nullptr;
-	ID3D11DeviceContext* m_deviceContext = nullptr;
+	IDXGISwapChain* swapChain = nullptr;
+	ID3D11Device* device = nullptr;
+	ID3D11DeviceContext* deviceContext = nullptr;
 
-	// render target texture
-	ID3D11RenderTargetView* m_renderTargetView = nullptr;
-	D3D11_TEXTURE2D_DESC m_backBufferDesc;
+	ID3D11RenderTargetView* renderTargetView = nullptr;
+
+	ID3D11Texture2D* backBuffer = nullptr;
+	D3D11_TEXTURE2D_DESC backBufferDesc;
+
+	ID3D11Texture2D* depthStencilBuffer = nullptr;
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+
+	D3D11_VIEWPORT viewport;
 };

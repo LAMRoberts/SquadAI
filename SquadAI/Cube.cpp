@@ -12,27 +12,35 @@ Cube::Cube(Renderer& renderer)
 
 	createRenderStates(renderer);
 
+	//bind triangle shaders
+	renderer.getDeviceContext()->IASetInputLayout(inputLayout);
+
+
+	// set topology
 	renderer.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 Cube::~Cube()
 {
-	m_vertexBuffer->Release();
-	m_IndexBuffer->Release();
+	vertexBuffer->Release();
+	indexBuffer->Release();
 
-	m_vertexShader->Release();
-	m_pixelShader->Release();
+	vertexShader->Release();
+	pixelShader->Release();
 
-	m_inputLayout->Release();
+	inputLayout->Release();
+
+	rasterizerState->Release();
 }
 
-void Cube::draw(Renderer & renderer)
+UINT Cube::getVertexCount()
 {
-	//bind triangle shaders
-	renderer.getDeviceContext()->IASetInputLayout(m_inputLayout);
+	return vertexCount;
+}
 
-	// draw triangle
-	renderer.getDeviceContext()->DrawIndexed(6, 0, 0);
+UINT Cube::getIndexCount()
+{
+	return indexCount;
 }
 
 void Cube::createVertexBuffer(Renderer& renderer)
@@ -44,15 +52,21 @@ void Cube::createVertexBuffer(Renderer& renderer)
 		Vertex(-0.5f, -0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
 		Vertex(-0.5f, 0.5f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f),
 
-		Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
-		Vertex(0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.75f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
+		Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
+		Vertex(0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.75f, 1.0f),
+
+		Vertex(0.5f, 0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
+		Vertex(0.5f, -0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
+		Vertex(-0.5f, 0.5f, 0.1f, 0.0f, 0.75f, 0.0f, 1.0f),
 	};
+
+	vertexCount = ARRAYSIZE(vertices);
 
 	// create vertex buffer
 	D3D11_BUFFER_DESC vertexBufferDesc = { 0 };
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(vertices);
+	vertexBufferDesc.ByteWidth = sizeof(Vertex) * vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	// define vertex data
@@ -60,7 +74,7 @@ void Cube::createVertexBuffer(Renderer& renderer)
 	vertexData.pSysMem = vertices;
 
 	// create the vertex buffer with the device.
-	auto CVBresult = renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	auto CVBresult = renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 
 	// check for errors
 	if (CVBresult != S_OK)
@@ -72,7 +86,7 @@ void Cube::createVertexBuffer(Renderer& renderer)
 	// bind vertex buffer
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	renderer.getDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	renderer.getDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 }
 
 void Cube::createIndexBuffer(Renderer& renderer)
@@ -82,12 +96,15 @@ void Cube::createIndexBuffer(Renderer& renderer)
 	{ 
 		0, 1, 2,
 		3, 4, 5,
+		6, 7, 8,
 	};
+
+	indexCount = ARRAYSIZE(indices);
 
 	// Fill in a buffer description.
 	D3D11_BUFFER_DESC indexBufferDesc = { 0 };
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned int) * ARRAYSIZE(indices);
+	indexBufferDesc.ByteWidth = sizeof(unsigned int) * indexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	// define index data
@@ -95,7 +112,7 @@ void Cube::createIndexBuffer(Renderer& renderer)
 	indexData.pSysMem = indices;
 
 	// create the index buffer with the device.
-	auto CIBresult = renderer.getDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_IndexBuffer);
+	auto CIBresult = renderer.getDevice()->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 
 	// check for errors
 	if (CIBresult != S_OK)
@@ -105,7 +122,7 @@ void Cube::createIndexBuffer(Renderer& renderer)
 	}
 
 	// set the index buffer
-	renderer.getDeviceContext()->IASetIndexBuffer(m_IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	renderer.getDeviceContext()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
 void Cube::createVertexShader(Renderer & renderer)
@@ -117,7 +134,7 @@ void Cube::createVertexShader(Renderer & renderer)
 	vsData = { std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>() };
 
 	// create shaders
-	auto CVSresult = renderer.getDevice()->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &m_vertexShader);
+	auto CVSresult = renderer.getDevice()->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &vertexShader);
 
 	// check for errors
 	if (CVSresult != S_OK)
@@ -127,7 +144,7 @@ void Cube::createVertexShader(Renderer & renderer)
 	}
 
 	// bind vertex shader
-	renderer.getDeviceContext()->VSSetShader(m_vertexShader, nullptr, 0);
+	renderer.getDeviceContext()->VSSetShader(vertexShader, nullptr, 0);
 }
 
 void Cube::createPixelShader(Renderer & renderer)
@@ -139,7 +156,7 @@ void Cube::createPixelShader(Renderer & renderer)
 	psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 
 	// create shaders
-	auto CPSresult = renderer.getDevice()->CreatePixelShader(psData.data(), psData.size(), nullptr, &m_pixelShader);
+	auto CPSresult = renderer.getDevice()->CreatePixelShader(psData.data(), psData.size(), nullptr, &pixelShader);
 
 	// check for errors
 	if (CPSresult != S_OK)
@@ -149,7 +166,7 @@ void Cube::createPixelShader(Renderer & renderer)
 	}
 
 	// bind pixel shader
-	renderer.getDeviceContext()->PSSetShader(m_pixelShader, nullptr, 0);
+	renderer.getDeviceContext()->PSSetShader(pixelShader, nullptr, 0);
 }
 
 void Cube::createInputLayout(Renderer & renderer)
@@ -161,7 +178,7 @@ void Cube::createInputLayout(Renderer & renderer)
 	};
 
 	// create layout
-	auto CILrestult = renderer.getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), vsData.data(), vsData.size(), &m_inputLayout);
+	auto CILrestult = renderer.getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), vsData.data(), vsData.size(), &inputLayout);
 
 	// check for errors
 	if (CILrestult != S_OK)
@@ -179,5 +196,14 @@ void Cube::createRenderStates(Renderer& renderer)
 		D3D11_CULL_NONE,
 		false, 0, 0, 0, 0, false, false, false);
 
-	renderer.getDevice()->CreateRasterizerState(&rasterizerDesc, &m_rasterizerState);
+	renderer.getDevice()->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+}
+
+void Cube::draw(Renderer & renderer)
+{
+	// refresh depth stencil view
+	renderer.getDeviceContext()->ClearDepthStencilView(renderer.getDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// draw triangle
+	renderer.getDeviceContext()->DrawIndexed(indexCount, 0, 0);
 }

@@ -16,6 +16,8 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	// create triangle
 	Cube cube(renderer);
 
+	renderer.setViewport();
+
 	//create message
 	MSG msg = { 0 };
 

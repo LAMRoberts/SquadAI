@@ -20,6 +20,9 @@ public:
 	Cube(Renderer& renderer);
 	~Cube();
 
+	UINT getVertexCount();
+	UINT getIndexCount();
+
 	void draw(Renderer& renderer);
 
 private:
@@ -34,15 +37,18 @@ private:
 
 	void createRenderStates(Renderer & renderer);
 	
-	ID3D11Buffer* m_vertexBuffer = nullptr;
-	ID3D11Buffer* m_IndexBuffer = nullptr;
+	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;
 
-	ID3D11VertexShader* m_vertexShader = nullptr;
-	ID3D11PixelShader* m_pixelShader = nullptr;
+	UINT vertexCount = 0;
+	UINT indexCount = 0;
 
-	ID3D11InputLayout* m_inputLayout = nullptr;
+	ID3D11VertexShader* vertexShader = nullptr;
+	ID3D11PixelShader* pixelShader = nullptr;
 
-	ID3D11RasterizerState* m_rasterizerState = nullptr;
+	ID3D11InputLayout* inputLayout = nullptr;
+
+	ID3D11RasterizerState* rasterizerState = nullptr;
 
 	std::vector<char> vsData;
 	std::vector<char> psData;
