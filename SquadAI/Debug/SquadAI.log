@@ -1,4 +1,2 @@
-﻿  Renderer.cpp
-c:\users\luke\desktop\y3\at\squadai\squadai\renderer.cpp(83): warning C4244: '=': conversion from 'float' to 'UINT', possible loss of data
-c:\users\luke\desktop\y3\at\squadai\squadai\renderer.cpp(84): warning C4244: '=': conversion from 'float' to 'UINT', possible loss of data
+﻿  main.cpp
   SquadAI.vcxproj -> C:\Users\Luke\Desktop\Y3\AT\SquadAI\Debug\SquadAI.exe

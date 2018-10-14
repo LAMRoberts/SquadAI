@@ -28,6 +28,8 @@ public:
 
 	void beginFrame();		// starts the frame clear
 	void update();
+	void rotate();
+	void moveCamera(float xPos, float yPos, float zPos);
 	void draw(UINT indexCount);
 	void endFrame();		// swap frame buffers
 
@@ -63,6 +65,10 @@ private:
 	DirectX::XMMATRIX camProjection;
 
 	DirectX::XMVECTOR camPosition;
+	float camX = 0.0f;
+	float camY = 5.0f;
+	float camZ = -8.0f;
+
 	DirectX::XMVECTOR camTarget;
 	DirectX::XMVECTOR camUp;
 

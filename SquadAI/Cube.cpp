@@ -15,7 +15,6 @@ Cube::Cube(Renderer& renderer)
 	//bind triangle shaders
 	renderer.getDeviceContext()->IASetInputLayout(inputLayout);
 
-
 	// set topology
 	renderer.getDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
@@ -30,7 +29,8 @@ Cube::~Cube()
 
 	inputLayout->Release();
 
-	rasterizerState->Release();
+	wireFrame->Release();
+	solidFill->Release();
 }
 
 UINT Cube::getVertexCount()
@@ -202,11 +202,27 @@ void Cube::createInputLayout(Renderer & renderer)
 
 void Cube::createRenderStates(Renderer& renderer) 
 {
-	// Rasterizer state
-	auto rasterizerDesc = CD3D11_RASTERIZER_DESC(
-		D3D11_FILL_SOLID,
-		D3D11_CULL_NONE,
-		false, 0, 0, 0, 0, false, false, false);
+	// wire frame rasterizer state
+	D3D11_RASTERIZER_DESC wireFrameDesc = { D3D11_FILL_WIREFRAME };
+	wireFrameDesc.CullMode = D3D11_CULL_NONE;
+	auto CWFRSresult = renderer.getDevice()->CreateRasterizerState(&wireFrameDesc, &wireFrame);
+	
+	// check for errors
+	if (CWFRSresult != S_OK)
+	{
+		MessageBox(nullptr, "Problem creating wire frame rasterizer state", "Error", MB_OK);
+		exit(0);
+	}
 
-	renderer.getDevice()->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+	// solid fill rasterizer state
+	D3D11_RASTERIZER_DESC solidFillDesc = { D3D11_FILL_SOLID };
+	solidFillDesc.CullMode = D3D11_CULL_NONE;
+	auto CSFRSresult = renderer.getDevice()->CreateRasterizerState(&solidFillDesc, &solidFill);
+
+	// check for errors
+	if (CSFRSresult != S_OK)
+	{
+		MessageBox(nullptr, "Problem creating solid fill rasterizer state", "Error", MB_OK);
+		exit(0);
+	}
 }

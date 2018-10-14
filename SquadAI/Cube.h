@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
 #include <fstream>
-
+#include <vector>
 #include "Renderer.h"
 
 struct Vertex
@@ -45,7 +44,8 @@ private:
 
 	ID3D11InputLayout* inputLayout = nullptr;
 
-	ID3D11RasterizerState* rasterizerState = nullptr;
+	ID3D11RasterizerState* wireFrame = nullptr;
+	ID3D11RasterizerState* solidFill = nullptr;
 
 	std::vector<char> vsData;
 	std::vector<char> psData;

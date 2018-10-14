@@ -148,7 +148,7 @@ void Renderer::createConstantBuffer()
 	}
 
 	//Camera information
-	camPosition = DirectX::XMVectorSet(0.0f, 5.0f, -8.0f, 0.0f);
+	camPosition = DirectX::XMVectorSet(camX, camY, camZ, 0.0f);
 	camTarget = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -171,13 +171,6 @@ void Renderer::beginFrame()
 
 void Renderer::update()
 {
-	rot += 0.0005f;
-
-	if (rot > 2 * DirectX::XM_PI)
-	{
-		rot = 0.0f;
-	}
-
 	// reset cube1World
 	cube1World = DirectX::XMMatrixIdentity();
 
@@ -198,6 +191,35 @@ void Renderer::update()
 
 	// set cube1World + transforms
 	cube2World = rotation * scale;
+}
+
+void Renderer::rotate()
+{
+		rot += 0.0005f;
+
+	if (rot > 2 * DirectX::XM_PI)
+	{
+		rot = 0.0f;
+	}
+}
+
+void Renderer::moveCamera(float xPos, float yPos, float zPos)
+{
+	camX += xPos;
+	camY += yPos;
+	camZ += zPos;
+
+	//Camera information
+	camPosition = DirectX::XMVectorSet(camX, camY, camZ, 0.0f);
+	camTarget = DirectX::XMVectorSet(camX, camY - 5.0f, camZ + 8.0f, 0.0f);
+	camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	// set view matrix
+	camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
+
+	// set projection matrix
+	camProjection = DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, (float)backBufferDesc.Width / (float)backBufferDesc.Height, 1.0f, 1000.0f);
+
 }
 
 void Renderer::draw(UINT indexCount)
