@@ -122,12 +122,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Squad.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CubeObject.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="Squad.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

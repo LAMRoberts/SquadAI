@@ -5,7 +5,7 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "Cube.h"
-#include "CubeObject.h"
+#include "Squad.h"
 
 enum Direction
 {
@@ -23,7 +23,13 @@ enum Axis
 	Z = 2
 };
 
+// ewwww global members
+UINT selectedSquad = 0;
+UINT selectedUnit = 0;
+
+// forward declarations
 void moveCamera(Renderer & renderer, std::vector<bool> direction);
+bool isUnitSelected(UINT squad, UINT unit);
 
 // weird windows version of main
 int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
@@ -45,39 +51,56 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	renderer.createConstantBuffer();
 	UINT indices = cube.getIndexCount();
 
-	CubeObject cubeObj(renderer);
-	std::vector<CubeObject> cubes;
-	cubes.assign(9, cubeObj);
+	bool shifting = false;
 
-	//create message
+	bool rotate = false;
+
+	std::vector<float> traDirs;
+	traDirs.assign(3, 0.0f);
+	float traSpeed = 0.0002;
+
+	bool scale = false;
+
+	// init squad prefab with units in formation
+	Squad defaultSquad(renderer, 100, Formation::COLUMNS, 5);
+
+	// init 3 squads of 9 units
+	std::vector<Squad> squads;
+	squads.assign(1, defaultSquad);
+
+	// create message
 	MSG msg = { 0 };
-
-	UINT selectedCube = 0;
 
 	// cam Directions
 	std::vector<bool> camDirs;
 	camDirs.assign(6, false);
 
-	// rotation
-	bool rotate = false;
-
-	// translation
-	float traSpeed = 0.0002;
-	std::vector<float> traDirs;
-	traDirs.assign(3, 0.0f);
-
-	// scale
-	bool scale = false;
-
-	// init cube pos's
-	for (int i = 0; i < cubes.size(); i++)
+	// set squad separation
+	for (int i = 0; i < squads.size(); i++)
 	{
-		cubes[i].translate(0.0f, 0.0f, 2 * i);
+		for (int j = 0; j < squads[i].getSquadSize(); j++)
+		{
+			squads[i].cubeObjs[j].translate(i * 10.0f, 0.0f, 0.0f);
+		}
 	}
 
-	//main loop
+	// main loop
 	while (msg.message != WM_QUIT)
 	{
+		// check if shifting
+		if (msg.message == WM_KEYDOWN && msg.wParam == 16)
+		{
+			if (msg.wParam == 16)
+			{
+				shifting = true;
+			}
+		}
+		else if (msg.message == WM_KEYUP && msg.wParam == 16)
+		{
+			shifting = false;
+		}
+
+		// check key
 		if (msg.message == WM_KEYDOWN)
 		{
 			switch (msg.wParam)
@@ -123,7 +146,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 				rotate = true;
 				
 				break;
-			}
+			}       
 			case VK_LEFT:
 			{
 				traDirs[X] = -traSpeed;
@@ -150,55 +173,118 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 49: // 1
 			{
-				selectedCube = 0;
+				if (shifting)
+				{
+					selectedSquad = 0;
+				}
+				else
+				{
+					selectedUnit = 0;
+				}
 
 				break;
 			}
 			case 50: // 2
 			{
-				selectedCube = 1;
+				if (shifting)
+				{
+					selectedSquad = 1;
+				}
+				else
+				{
+					selectedUnit = 1;
+				}
 
 				break;
 			}
 			case 51: // 3
 			{
-				selectedCube = 2;
+				if (shifting)
+				{
+					selectedSquad = 2;
+				}
+				else
+				{
+					selectedUnit = 2;
+				}
 
 				break;
 			}
 			case 52: // 4
 			{
-				selectedCube = 3;
+				if (shifting)
+				{
+					selectedSquad = 3;
+				}
+				else
+				{
+					selectedUnit = 3;
+				}
 
 				break;
 			}
 			case 53: // 5
 			{
-				selectedCube = 4;
+				if (shifting)
+				{
+					selectedSquad = 4;
+				}
+				else
+				{
+					selectedUnit = 4;
+				}
 
 				break;
 			}
 			case 54: // 6
 			{
-				selectedCube = 5;
+				if (shifting)
+				{
+					selectedSquad = 5;
+				}
+				else
+				{
+					selectedUnit = 5;
+				}
 
 				break;
 			}
 			case 55: // 7
 			{
-				selectedCube = 6;
+				if (shifting)
+				{
+					selectedSquad = 6;
+				}
+				else
+				{
+					selectedUnit = 6;
+				}
 
 				break;
 			}
 			case 56: // 8
 			{
-				selectedCube = 7;
+				if (shifting)
+				{
+					selectedSquad = 7;
+				}
+				else
+				{
+					selectedUnit = 7;
+				}
 
 				break;
 			}
 			case 57: // 9
 			{
-				selectedCube = 8;
+				if (shifting)
+				{
+					selectedSquad = 8;
+				}
+				else
+				{
+					selectedUnit = 8;
+				}
 
 				break;
 			}
@@ -282,6 +368,21 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			DispatchMessage(&msg);
 		}
 
+		for (int i = 0; i < squads.size(); i++)
+		{
+			for (int j = 0; j < squads[i].cubeObjs.size(); j++)
+			{
+				if (isUnitSelected(i, j))
+				{
+					squads[i].cubeObjs[j].scale(1.0f, 2.0f, 1.0f);
+				}
+				else if (i == selectedSquad)
+				{
+					squads[i].cubeObjs[j].scale(1.0f, 1.5f, 1.0f);
+				}
+			}
+		}
+
 		//start frame
 		renderer.beginFrame();
 
@@ -290,28 +391,32 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		// move camera based on direction keys pressed
 		moveCamera(renderer, camDirs);
 
-		cubes[selectedCube].scale(1.0f, 2.0f, 1.0f);
-
-		for (int i = 0; i < cubes.size(); i++)
+		for (int i = 0; i < squads.size(); i++)
 		{
-			cubes[i].preUpdate(renderer);
-
-			cubes[selectedCube].translate(traDirs[X], traDirs[Y], traDirs[Z]);
-
-			if (rotate)
+			for (int j = 0; j < squads[i].getSquadSize(); j++)
 			{
-				cubes[selectedCube].rotate(0.0002f, 0.0f, 1.0f, 0.0f);
+				squads[i].cubeObjs[j].preUpdate(renderer);
+
+				if (isUnitSelected(i, j))
+				{
+					squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
+				}
+
+				if (rotate && isUnitSelected(i, j))
+				{
+					squads[i].cubeObjs[j].rotate(0.0002f, 0.0f, 1.0f, 0.0f);
+				}
+				
+				if (i != selectedSquad)
+				{
+					squads[i].cubeObjs[j].scale(1.0f, 1.0f, 1.0f);
+				}
+
+				squads[i].cubeObjs[j].postUpdate(renderer);
+
+				renderer.draw(indices);
 			}
-
-			if (i != selectedCube)
-			{
-				cubes[i].scale(1.0f, 1.0f, 1.0f);
-			}
-
-			cubes[i].postUpdate(renderer);
-
-			renderer.draw(indices);
-		}
+		}		
 
 		/////////////////////// END OF MAIN LOOP ///////////////////////
 
@@ -348,5 +453,17 @@ void moveCamera(Renderer & renderer, std::vector<bool> direction)
 	if (direction[BACK])
 	{
 		renderer.moveCamera(0.0f, 0.0f, -0.005f);
+	}
+}
+
+bool isUnitSelected(UINT squad, UINT unit)
+{
+	if (squad == selectedSquad && unit == selectedUnit)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

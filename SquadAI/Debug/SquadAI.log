@@ -1,2 +1,10 @@
-﻿  Cube.cpp
+﻿  main.cpp
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(37): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(78): warning C4018: '<': signed/unsigned mismatch
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(80): warning C4018: '<': signed/unsigned mismatch
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(370): warning C4018: '<': signed/unsigned mismatch
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(372): warning C4018: '<': signed/unsigned mismatch
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(393): warning C4018: '<': signed/unsigned mismatch
+c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(395): warning C4018: '<': signed/unsigned mismatch
   SquadAI.vcxproj -> C:\Users\Luke\Desktop\Y3\AT\SquadAI\Debug\SquadAI.exe
