@@ -27,6 +27,9 @@
     <ClCompile Include="Cube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CubeObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="Cube.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeObject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

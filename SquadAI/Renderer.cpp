@@ -159,7 +159,6 @@ void Renderer::createConstantBuffer()
 	camProjection = DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, (float)backBufferDesc.Width / (float)backBufferDesc.Height, 1.0f, 1000.0f);
 }
 
-//set the clear background
 void Renderer::beginFrame()
 {
 	// set background colour
@@ -167,40 +166,6 @@ void Renderer::beginFrame()
 
 	// refresh depth stencil view
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-void Renderer::update()
-{
-	// reset cube1World
-	cube1World = DirectX::XMMatrixIdentity();
-
-	// define cube1World
-	DirectX::XMVECTOR rotaxis = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	rotation = DirectX::XMMatrixRotationAxis(rotaxis, rot);
-	translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f);
-
-	// set cube1World + transforms
-	cube1World = translation * rotation;
-
-	// reset cube2World
-	cube2World = DirectX::XMMatrixIdentity();
-
-	// define cube2World
-	rotation = DirectX::XMMatrixRotationAxis(rotaxis, -rot);
-	scale = DirectX::XMMatrixScaling(1.3f, 1.3f, 1.3f);
-
-	// set cube1World + transforms
-	cube2World = rotation * scale;
-}
-
-void Renderer::rotate()
-{
-		rot += 0.0005f;
-
-	if (rot > 2 * DirectX::XM_PI)
-	{
-		rot = 0.0f;
-	}
 }
 
 void Renderer::moveCamera(float xPos, float yPos, float zPos)
@@ -219,36 +184,24 @@ void Renderer::moveCamera(float xPos, float yPos, float zPos)
 
 	// set projection matrix
 	camProjection = DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, (float)backBufferDesc.Width / (float)backBufferDesc.Height, 1.0f, 1000.0f);
+}
 
+void Renderer::updateWVP(DirectX::XMMATRIX matrix)
+{
+	WVP = matrix;
 }
 
 void Renderer::draw(UINT indexCount)
 {
-	//Set the WVP matrix and send it to the constant buffer in effect file
-	WVP = cube1World * camView * camProjection;
-	cbPerObj.WVP = XMMatrixTranspose(WVP);
-	deviceContext->UpdateSubresource(cbPerObjectBuffer, 0, nullptr, &cbPerObj, 0, 0);
-	deviceContext->VSSetConstantBuffers(0, 1, &cbPerObjectBuffer);
-
-	//Draw the first cube
-	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	WVP = cube2World * camView * camProjection;
-	cbPerObj.WVP = XMMatrixTranspose(WVP);
-	deviceContext->UpdateSubresource(cbPerObjectBuffer, 0, nullptr, &cbPerObj, 0, 0);
-	deviceContext->VSSetConstantBuffers(0, 1, &cbPerObjectBuffer);
-
-	//Draw the second cube
+	//Draw the cube
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
-// swap frame buffers
 void Renderer::endFrame()
 {
 	swapChain->Present(0, 0);
 }
 
-// getters
 ID3D11Device * Renderer::getDevice()
 {
 	return device;

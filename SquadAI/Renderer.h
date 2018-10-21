@@ -27,15 +27,23 @@ public:
 	void createConstantBuffer();
 
 	void beginFrame();		// starts the frame clear
-	void update();
-	void rotate();
 	void moveCamera(float xPos, float yPos, float zPos);
+	void updateWVP(DirectX::XMMATRIX matrix);
 	void draw(UINT indexCount);
 	void endFrame();		// swap frame buffers
 
 	ID3D11Device* getDevice();
 	ID3D11DeviceContext* getDeviceContext();
 	ID3D11DepthStencilView* getDepthStencilView();
+
+	ID3D11Buffer* cbPerObjectBuffer;
+	cbPerObject cbPerObj;
+	DirectX::XMMATRIX WVP;
+	DirectX::XMMATRIX camView;
+	DirectX::XMMATRIX camProjection;
+	DirectX::XMVECTOR camPosition;
+	DirectX::XMVECTOR camTarget;
+	DirectX::XMVECTOR camUp;
 
 private:
 
@@ -55,28 +63,7 @@ private:
 
 	D3D11_VIEWPORT viewport;
 
-	ID3D11Buffer* cbPerObjectBuffer;
-
-	cbPerObject cbPerObj;
-
-	DirectX::XMMATRIX WVP;
-
-	DirectX::XMMATRIX camView;
-	DirectX::XMMATRIX camProjection;
-
-	DirectX::XMVECTOR camPosition;
 	float camX = 0.0f;
 	float camY = 5.0f;
 	float camZ = -8.0f;
-
-	DirectX::XMVECTOR camTarget;
-	DirectX::XMVECTOR camUp;
-
-	DirectX::XMMATRIX cube1World;
-	DirectX::XMMATRIX cube2World;
-
-	DirectX::XMMATRIX rotation;
-	DirectX::XMMATRIX scale;
-	DirectX::XMMATRIX translation;
-	float rot = 0.01f;
 };
