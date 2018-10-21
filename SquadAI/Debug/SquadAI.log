@@ -1,10 +1,11 @@
 ﻿  main.cpp
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(37): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(60): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(78): warning C4018: '<': signed/unsigned mismatch
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(80): warning C4018: '<': signed/unsigned mismatch
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(370): warning C4018: '<': signed/unsigned mismatch
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(372): warning C4018: '<': signed/unsigned mismatch
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(393): warning C4018: '<': signed/unsigned mismatch
-c:\users\luke\desktop\y3\at\squadai\squadai\main.cpp(395): warning C4018: '<': signed/unsigned mismatch
-  SquadAI.vcxproj -> C:\Users\Luke\Desktop\Y3\AT\SquadAI\Debug\SquadAI.exe
+e:\uwe\y3\at\squadai\squadai\main.cpp(38): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+e:\uwe\y3\at\squadai\squadai\main.cpp(85): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(93): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(95): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(113): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(124): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(434): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(436): warning C4018: '<': signed/unsigned mismatch
+  SquadAI.vcxproj -> E:\UWE\Y3\AT\SquadAI\Debug\SquadAI.exe

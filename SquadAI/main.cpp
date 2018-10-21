@@ -24,6 +24,7 @@ enum Axis
 };
 
 // ewwww global members
+bool highlightingUnit = false; // highlighting a squad or unit?
 UINT selectedSquad = 0;
 UINT selectedUnit = 0;
 
@@ -51,22 +52,27 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	renderer.createConstantBuffer();
 	UINT indices = cube.getIndexCount();
 
+	// tests for matrices
 	bool shifting = false;
-
 	bool rotate = false;
-
 	std::vector<float> traDirs;
 	traDirs.assign(3, 0.0f);
-	float traSpeed = 0.0002;
-
+	float traSpeed = 0.002;
 	bool scale = false;
 
 	// init squad prefab with units in formation
-	Squad defaultSquad(renderer, 100, Formation::COLUMNS, 5);
+	Squad squareSquad(renderer, 9, Formation::SQUARE, 0);
+	Squad rowsSquad(renderer, 6, Formation::ROWS, 3);
+	Squad columnsSquad(renderer, 8, Formation::COLUMNS, 4);
 
 	// init 3 squads of 9 units
 	std::vector<Squad> squads;
-	squads.assign(1, defaultSquad);
+	squads.assign(1, squareSquad);
+	squads.insert(squads.end(), rowsSquad);
+	squads.insert(squads.end(), columnsSquad);
+
+	float squadXOffset = 0.0f;
+	float squadSeparation = 2.0f;
 
 	// create message
 	MSG msg = { 0 };
@@ -78,10 +84,57 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	// set squad separation
 	for (int i = 0; i < squads.size(); i++)
 	{
-		for (int j = 0; j < squads[i].getSquadSize(); j++)
+		int unitsInRow = 0;
+
+		switch (squads[i].getFormation())
 		{
-			squads[i].cubeObjs[j].translate(i * 10.0f, 0.0f, 0.0f);
+		case Formation::SQUARE:
+		{
+			unitsInRow = sqrt(squads[i].getSquadSize());
+
+			for (int j = 0; j < squads[i].getSquadSize(); j++)
+			{
+				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
+			}
+
+			break;
 		}
+		case Formation::ROWS:
+		{
+			unitsInRow = squads[i].getSquadSize() / squads[i].getFormationNumber();
+
+			int a = squads[i].getSquadSize() % squads[i].getFormationNumber();
+
+			if (a != 0)
+			{
+				unitsInRow += 1;
+			}
+
+			for (int j = 0; j < squads[i].getSquadSize(); j++)
+			{
+				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
+			}
+
+			break;
+		}
+		case Formation::COLUMNS:
+		{
+			unitsInRow = squads[i].getFormationNumber();
+
+			for (int j = 0; j < squads[i].getSquadSize(); j++)
+			{
+				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
+			}
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+
+		squadXOffset += unitsInRow + (unitsInRow - 1) + squadSeparation;
 	}
 
 	// main loop
@@ -93,11 +146,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			if (msg.wParam == 16)
 			{
 				shifting = true;
+				highlightingUnit = true;
 			}
 		}
 		else if (msg.message == WM_KEYUP && msg.wParam == 16)
 		{
 			shifting = false;
+			highlightingUnit = false;
 		}
 
 		// check key
@@ -173,7 +228,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 49: // 1
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 0;
 				}
@@ -186,7 +241,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 50: // 2
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 1;
 				}
@@ -199,7 +254,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 51: // 3
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 2;
 				}
@@ -212,7 +267,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 52: // 4
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 3;
 				}
@@ -225,7 +280,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 53: // 5
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 4;
 				}
@@ -238,7 +293,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 54: // 6
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 5;
 				}
@@ -251,7 +306,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 55: // 7
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 6;
 				}
@@ -264,7 +319,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 56: // 8
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 7;
 				}
@@ -277,7 +332,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			}
 			case 57: // 9
 			{
-				if (shifting)
+				if (!shifting)
 				{
 					selectedSquad = 8;
 				}
@@ -368,21 +423,6 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			DispatchMessage(&msg);
 		}
 
-		for (int i = 0; i < squads.size(); i++)
-		{
-			for (int j = 0; j < squads[i].cubeObjs.size(); j++)
-			{
-				if (isUnitSelected(i, j))
-				{
-					squads[i].cubeObjs[j].scale(1.0f, 2.0f, 1.0f);
-				}
-				else if (i == selectedSquad)
-				{
-					squads[i].cubeObjs[j].scale(1.0f, 1.5f, 1.0f);
-				}
-			}
-		}
-
 		//start frame
 		renderer.beginFrame();
 
@@ -397,19 +437,33 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			{
 				squads[i].cubeObjs[j].preUpdate(renderer);
 
-				if (isUnitSelected(i, j))
-				{
+				// translation
+				if ((isUnitSelected(i, j) && highlightingUnit) || (i == selectedSquad && !highlightingUnit))
+				{ // if specific unit is selected or entire unit is selected
 					squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
 				}
 
-				if (rotate && isUnitSelected(i, j))
+				// rotation
+				if (rotate && isUnitSelected(i, j) && highlightingUnit)
 				{
 					squads[i].cubeObjs[j].rotate(0.0002f, 0.0f, 1.0f, 0.0f);
-				}
-				
+				}			
+
+				// scaling
 				if (i != selectedSquad)
 				{
 					squads[i].cubeObjs[j].scale(1.0f, 1.0f, 1.0f);
+				}
+				else
+				{
+					if (j == selectedUnit && highlightingUnit)
+					{
+						squads[i].cubeObjs[j].scale(1.0f, 2.0f, 1.0f);
+					}
+					else
+					{
+						squads[i].cubeObjs[j].scale(1.0f, 1.5f, 1.0f);
+					}
 				}
 
 				squads[i].cubeObjs[j].postUpdate(renderer);

@@ -1,8 +1,10 @@
 #include "Squad.h"
 
-Squad::Squad(Renderer & renderer, UINT size, Formation formation, int formNo)
+Squad::Squad(Renderer & renderer, UINT size, Formation form, int number)
 {
 	squadSize = size;
+	formation = form;
+	formNo = number;
 
 	CubeObject defaultCube(renderer);
 	cubeObjs.assign(squadSize, defaultCube);
@@ -55,4 +57,12 @@ Squad::~Squad()
 UINT Squad::getSquadSize()
 {
 	return squadSize;
+}
+Formation Squad::getFormation()
+{
+	return formation;
+}
+int Squad::getFormationNumber()
+{
+	return formNo;
 }

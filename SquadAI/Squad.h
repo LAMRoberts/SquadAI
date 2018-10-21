@@ -6,8 +6,8 @@
 enum class Formation
 {
 	SQUARE	= 0,
-	ROWS	= 1,
-	COLUMNS = 2,
+	COLUMNS = 1,
+	ROWS	= 2,
 };
 
 class Squad
@@ -16,11 +16,11 @@ public:
 	Squad(Renderer & renderer, UINT size, Formation formation, int formNo);
 	~Squad();
 
-	void init(Renderer & renderer, UINT size);
-
 	std::vector<CubeObject> cubeObjs;
 
 	UINT getSquadSize();
+	Formation getFormation();
+	int getFormationNumber();
 
 private:
 
