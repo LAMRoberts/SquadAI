@@ -21,8 +21,13 @@ public:
 	UINT getSquadSize();
 	Formation getFormation();
 	int getFormationNumber();
+	void setID(UINT ID);
+	void setUnitIDs();
+	UINT getSquadID();
 
 private:
+
+	int squadID;
 
 	UINT squadSize = 9;
 

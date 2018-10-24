@@ -71,3 +71,17 @@ DirectX::XMMATRIX CubeObject::updateWorldMatrix(Renderer & renderer)
 
 	return m;
 }
+
+void CubeObject::setID(DirectX::XMINT2 unitID)
+{
+	ID = unitID;
+}
+DirectX::XMINT2 CubeObject::getID()
+{
+	return ID;
+}
+
+DirectX::XMMATRIX CubeObject::getWorldMatrix()
+{
+	return world;
+}
