@@ -15,7 +15,8 @@ CubeObject::CubeObject(Renderer & renderer)
 	};
 
 	indices = 
-	{ 0, 2, 3, 0, 1, 2, 
+	{
+	  0, 2, 3, 0, 1, 2, 
 	  4, 1, 0, 4, 5, 1, 
 	  7, 5, 4, 7, 6, 5, 
 	  3, 6, 7, 3, 2, 6, 
@@ -77,7 +78,7 @@ void CubeObject::scale(float x, float y, float z)
 void CubeObject::postUpdate(Renderer & renderer)
 {
 	// set world + transforms
-	world = oRotation * oTranslation * oScale;
+	world = oRotation * oScale * oTranslation;
 
 	renderer.updateWVP(updateWorldMatrix(renderer));
 }
@@ -114,6 +115,8 @@ std::vector<DWORD>& CubeObject::getIndices()
 
 DirectX::XMMATRIX & CubeObject::getWorldMatrix()
 {
+	world = oRotation * oScale * oTranslation;
+
 	return world;
 }
 

@@ -45,6 +45,7 @@ DirectX::XMINT2 selected = { 0, 0 }; // x = squad number, y = unit number
 // forward declarations
 void moveCamera(Renderer & renderer, std::vector<bool> direction);
 bool isUnitSelected(DirectX::XMINT2 unitID);
+void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::vector<Squad> & squads);
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir);
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, DirectX::XMMATRIX& worldSpace);
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point);
@@ -78,6 +79,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 	// tests for matrices
 	bool shifting = false;
+	bool clicking = false;
 	bool rotate = false;
 	std::vector<float> traDirs;
 	traDirs.assign(3, 0.0f);
@@ -457,26 +459,18 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		}
 		else if (msg.message == WM_LBUTTONDOWN)
 		{
-			GetCursorPos(&mousePos);
-			ScreenToClient(window.getHandle(), &mousePos);
-
-			DirectX::XMVECTOR prwsPos, prwsDir;
-			pickRayVector(renderer, mousePos.x, mousePos.y, prwsPos, prwsDir);
-
-			// for each squad
-			for (int i = 0; i < squads.size(); i++)
+			if (!clicking)
 			{
-				// for each unit in each squad
-				for (int j = 0; i < squads[i].cubeObjs.size(); j++)
-				{
-					// if clicked on
+				clicking = true;
 
-					// each cube needds an array of its vertex positions, index
-					if (pick(prwsPos, prwsDir, squads[i].cubeObjs[j].getVertexPositions(), squads[i].cubeObjs[j].getIndices(), squads[i].cubeObjs[j].getWorldMatrix()))
-					{
-						// set selected to this units ID
-					}
-				}
+				selectObject(mousePos, window, renderer, squads);
+			}
+		}
+		else if (msg.message == WM_LBUTTONUP)
+		{
+			if (clicking)
+			{
+				clicking = false;
 			}
 		}
 
@@ -603,6 +597,41 @@ bool isUnitSelected(DirectX::XMINT2 unitID)
 	}
 }
 
+void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::vector<Squad> & squads)
+{
+	GetCursorPos(&mousePos);
+	ScreenToClient(window.getHandle(), &mousePos);
+
+	DirectX::XMVECTOR rayOrigin = { 0 };
+	DirectX::XMVECTOR rayDirection = { 0 };
+
+	pickRayVector(renderer, mousePos.x, mousePos.y, rayOrigin, rayDirection);
+
+	bool foundUnit = false;
+
+	// for each squad
+	for (int i = 0; i < squads.size(); i++)
+	{
+		// for each unit in each squad
+		for (int j = 0; j < squads[i].cubeObjs.size(); j++)
+		{
+			// if clicked on
+			if (pick(rayOrigin, rayDirection, squads[i].cubeObjs[j].getVertexPositions(), squads[i].cubeObjs[j].getIndices(), squads[i].cubeObjs[j].getWorldMatrix()))
+			{
+				// if a unit hasnt been selected this time
+				if (foundUnit == false)
+				{
+					// set selected to this units ID
+					selected = { i, j };
+
+					foundUnit = true;
+				}
+			}
+		}
+	}
+
+}
+
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir)
 {
 	DirectX::XMVECTOR pickRayInViewSpaceDir = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -631,11 +660,7 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 	pickRayInWorldSpaceDir = XMVector3TransformNormal(pickRayInViewSpaceDir, pickRayToWorldSpaceMatrix);
 }
 
-bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, 
-		DirectX::XMVECTOR pickRayInWorldSpaceDir,
-		std::vector<DirectX::XMFLOAT3> & vertPosArray,
-		std::vector<DWORD> & indexPosArray,
-		DirectX::XMMATRIX & worldSpace)
+bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3> & vertPosArray, std::vector<DWORD> & indexPosArray, DirectX::XMMATRIX & worldSpace)
 {
 	for (int i = 0; i < indexPosArray.size() / 3; i++)
 	{
