@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 #include "Renderer.h"
 
@@ -20,12 +21,15 @@ public:
 
 	void setID(DirectX::XMINT2 unitID);
 	DirectX::XMINT2 getID();
-	DirectX::XMMATRIX getWorldMatrix();
 
-	std::vector<DirectX::XMFLOAT3> vertexPositions;
-	std::vector<UINT> indices;
+	std::vector<DirectX::XMFLOAT3> & getVertexPositions();
+	std::vector<DWORD> & getIndices();
+	DirectX::XMMATRIX & getWorldMatrix();
 
 private:
+
+	std::vector<DirectX::XMFLOAT3> vertexPositions;
+	std::vector<DWORD> indices;
 
 	DirectX::XMINT2 ID;
 	DirectX::XMFLOAT3 pos;

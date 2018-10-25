@@ -47,6 +47,7 @@ void moveCamera(Renderer & renderer, std::vector<bool> direction);
 bool isUnitSelected(DirectX::XMINT2 unitID);
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir);
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, DirectX::XMMATRIX& worldSpace);
+bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point);
 
 #pragma endregion
 
@@ -471,7 +472,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 					// if clicked on
 
 					// each cube needds an array of its vertex positions, index
-					if (pick(prwsPos, prwsDir, squads[i].cubeObjs[j].vertexPositions, squads[i].cubeObjs[j].indices, squads[i].cubeObjs[j].getWorldMatrix()))
+					if (pick(prwsPos, prwsDir, squads[i].cubeObjs[j].getVertexPositions(), squads[i].cubeObjs[j].getIndices(), squads[i].cubeObjs[j].getWorldMatrix()))
 					{
 						// set selected to this units ID
 					}
@@ -621,11 +622,10 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 
 	pickRayInViewSpaceDir = DirectX::XMVectorSet(rayX, rayY, rayZ, 0.0f);
 
-	// Transform 3D Ray from View space to 3D ray in World space
 	DirectX::XMMATRIX pickRayToWorldSpaceMatrix;
-	DirectX::XMVECTOR defaultVector;    //We don't use this, but the xna matrix inverse function requires the first parameter to not be null
+	DirectX::XMVECTOR defaultVector;    
 
-	pickRayToWorldSpaceMatrix = DirectX::XMMatrixInverse(&defaultVector, renderer.camView);    //Inverse of View Space matrix is World space matrix
+	pickRayToWorldSpaceMatrix = DirectX::XMMatrixInverse(&defaultVector, renderer.camView);
 
 	pickRayInWorldSpacePos = XMVector3TransformCoord(pickRayInViewSpacePos, pickRayToWorldSpaceMatrix);
 	pickRayInWorldSpaceDir = XMVector3TransformNormal(pickRayInViewSpaceDir, pickRayToWorldSpaceMatrix);
@@ -633,11 +633,10 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, 
 		DirectX::XMVECTOR pickRayInWorldSpaceDir,
-		std::vector<DirectX::XMFLOAT3>& vertPosArray,
-		std::vector<DWORD>& indexPosArray,
-		DirectX::XMMATRIX& worldSpace)
+		std::vector<DirectX::XMFLOAT3> & vertPosArray,
+		std::vector<DWORD> & indexPosArray,
+		DirectX::XMMATRIX & worldSpace)
 {
-	//Loop through each triangle in the object
 	for (int i = 0; i < indexPosArray.size() / 3; i++)
 	{
 		//Triangle's vertices V1, V2, V3
