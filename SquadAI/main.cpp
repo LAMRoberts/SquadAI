@@ -180,21 +180,6 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		
 	#pragma region Inputs
 
-		// check if shifting
-		if (msg.message == WM_KEYDOWN && msg.wParam == 16)
-		{
-			if (msg.wParam == 16)
-			{
-				shifting = true;
-				highlightingUnit = true;
-			}
-		}
-		else if (msg.message == WM_KEYUP && msg.wParam == 16)
-		{
-			shifting = false;
-			highlightingUnit = false;
-		}
-
 		// check input
 		if (msg.message == WM_KEYDOWN)
 		{
@@ -202,6 +187,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 			switch (msg.wParam)
 			{
+			case 16: // left shift
+			{
+				shifting = true;
+				highlightingUnit = true;
+
+				break;
+			}
 			case 'a' - 32:
 			{
 				camDirs[LEFT] = true;
@@ -395,6 +387,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		{
 			switch (msg.wParam)
 			{
+			case 16:
+			{
+				shifting = false;
+				highlightingUnit = false;
+
+				break;
+			}
 			case 'a' - 32:
 			{
 				camDirs[LEFT] = false;
@@ -751,10 +750,11 @@ bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, Direc
 	{
 		cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV3, triV1), DirectX::XMVectorSubtract(point, triV1));
 		cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV3, triV1), DirectX::XMVectorSubtract(triV2, triV1));
+
 		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(cp1, cp2)) >= 0)
 		{
-			cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV2, triV1), (point, triV1));
-			cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV2, triV1), (triV3, triV1));
+			cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV2, triV1), DirectX::XMVectorSubtract(point, triV1));
+			cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV2, triV1), DirectX::XMVectorSubtract(triV3, triV1));
 
 			if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(cp1, cp2)) >= 0)
 			{
