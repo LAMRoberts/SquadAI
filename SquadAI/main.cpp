@@ -631,11 +631,11 @@ void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::v
 
 }
 
-void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir)
+void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & rayOrigin, DirectX::XMVECTOR & rayDirection)
 {
-	DirectX::XMVECTOR pickRayInViewSpaceDir = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	DirectX::XMVECTOR pickRayInViewSpacePos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-
+	DirectX::XMVECTOR pRayOrigin = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR pRayDirection = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	
 	float rayX = 0.0f;
 	float rayY = 0.0f;
 	float rayZ = 0.0f;
@@ -648,72 +648,71 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 	rayY = -(((2.0f * mouseY) / windowHeight) - 1) / DirectX::XMVectorGetY(yv);
 	rayZ = 1.0f;
 
-	pickRayInViewSpaceDir = DirectX::XMVectorSet(rayX, rayY, rayZ, 0.0f);
+	pRayDirection = DirectX::XMVectorSet(rayX, rayY, rayZ, 0.0f);
 
-	DirectX::XMMATRIX pickRayToWorldSpaceMatrix;
+	DirectX::XMMATRIX rayWorldMatrix;
 	DirectX::XMVECTOR defaultVector;    
 
-	pickRayToWorldSpaceMatrix = DirectX::XMMatrixInverse(&defaultVector, renderer.camView);
+	rayWorldMatrix = DirectX::XMMatrixInverse(&defaultVector, renderer.camView);
 
-	pickRayInWorldSpacePos = XMVector3TransformCoord(pickRayInViewSpacePos, pickRayToWorldSpaceMatrix);
-	pickRayInWorldSpaceDir = XMVector3TransformNormal(pickRayInViewSpaceDir, pickRayToWorldSpaceMatrix);
+	rayOrigin = XMVector3TransformCoord(pRayOrigin, rayWorldMatrix);
+	rayDirection = XMVector3TransformNormal(pRayDirection, rayWorldMatrix);
 }
 
-bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3> & vertPosArray, std::vector<DWORD> & indexPosArray, DirectX::XMMATRIX & worldSpace)
+bool pick(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection, std::vector<DirectX::XMFLOAT3> & vertexArray, std::vector<DWORD> & indexArray, DirectX::XMMATRIX & worldMatrix)
 {
-	for (int i = 0; i < indexPosArray.size() / 3; i++)
+	for (int i = 0; i < indexArray.size() / 3; i++)
 	{
-		//Triangle's vertices V1, V2, V3
-		DirectX::XMVECTOR tri1V1 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		DirectX::XMVECTOR tri1V2 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		DirectX::XMVECTOR tri1V3 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		DirectX::XMVECTOR vertex0 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		DirectX::XMVECTOR vertex1 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		DirectX::XMVECTOR vertex2 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
-		//Temporary 3d floats for each vertex
-		DirectX::XMFLOAT3 tV1, tV2, tV3;
+		DirectX::XMFLOAT3 tempVertex0;
+		DirectX::XMFLOAT3 tempVertex1;
+		DirectX::XMFLOAT3 tempVertex2;
 
-		//Get triangle 
-		tV1 = vertPosArray[indexPosArray[(i * 3) + 0]];
-		tV2 = vertPosArray[indexPosArray[(i * 3) + 1]];
-		tV3 = vertPosArray[indexPosArray[(i * 3) + 2]];
+		// get triangle 
+		tempVertex0 = vertexArray[indexArray[(i * 3) + 0]];
+		tempVertex1 = vertexArray[indexArray[(i * 3) + 1]];
+		tempVertex2 = vertexArray[indexArray[(i * 3) + 2]];
 
-		tri1V1 = DirectX::XMVectorSet(tV1.x, tV1.y, tV1.z, 0.0f);
-		tri1V2 = DirectX::XMVectorSet(tV2.x, tV2.y, tV2.z, 0.0f);
-		tri1V3 = DirectX::XMVectorSet(tV3.x, tV3.y, tV3.z, 0.0f);
+		vertex0 = DirectX::XMVectorSet(tempVertex0.x, tempVertex0.y, tempVertex0.z, 0.0f);
+		vertex1 = DirectX::XMVectorSet(tempVertex1.x, tempVertex1.y, tempVertex1.z, 0.0f);
+		vertex2 = DirectX::XMVectorSet(tempVertex2.x, tempVertex2.y, tempVertex2.z, 0.0f);
 
-		//Transform the vertices to world space
-		tri1V1 = DirectX::XMVector3TransformCoord(tri1V1, worldSpace);
-		tri1V2 = DirectX::XMVector3TransformCoord(tri1V2, worldSpace);
-		tri1V3 = DirectX::XMVector3TransformCoord(tri1V3, worldSpace);
+		// transform the vertices to world space
+		vertex0 = DirectX::XMVector3TransformCoord(vertex0, worldMatrix);
+		vertex1 = DirectX::XMVector3TransformCoord(vertex1, worldMatrix);
+		vertex2 = DirectX::XMVector3TransformCoord(vertex2, worldMatrix);
 
-		//Find the normal using U, V coordinates (two edges)
+		// find the normal using U and V
 		DirectX::XMVECTOR U = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		DirectX::XMVECTOR V = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		DirectX::XMVECTOR faceNormal = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
-		U = DirectX::XMVectorSubtract(tri1V2, tri1V1);
-		V = DirectX::XMVectorSubtract(tri1V3, tri1V1);
+		U = DirectX::XMVectorSubtract(vertex1, vertex0);
+		V = DirectX::XMVectorSubtract(vertex2, vertex0);
 
-		//Compute face normal by crossing U, V
+		// get face normal from U and V
 		faceNormal = DirectX::XMVector3Cross(U, V);
-
 		faceNormal = DirectX::XMVector3Normalize(faceNormal);
 
-		//Calculate a point on the triangle for the plane equation
-		DirectX::XMVECTOR triPoint = tri1V1;
+		// calculate a point on the triangle for the plane equation
+		DirectX::XMVECTOR point = vertex0;
 
-		//Get plane equation ("Ax + By + Cz + D = 0") Variables
+		// get plane equation (Ax + By + Cz + D = 0)
 		float tri1A = DirectX::XMVectorGetX(faceNormal);
 		float tri1B = DirectX::XMVectorGetY(faceNormal);
 		float tri1C = DirectX::XMVectorGetZ(faceNormal);
-		float tri1D = (-tri1A * DirectX::XMVectorGetX(triPoint) - tri1B * DirectX::XMVectorGetY(triPoint) - tri1C * DirectX::XMVectorGetZ(triPoint));
+		float tri1D = (-tri1A * DirectX::XMVectorGetX(point) - tri1B * DirectX::XMVectorGetY(point) - tri1C * DirectX::XMVectorGetZ(point));
 
-		//Now we find where (on the ray) the ray intersects with the triangles plane
+		// get the length of the ray
 		float ep1, ep2, t = 0.0f;
 		float planeIntersectX, planeIntersectY, planeIntersectZ = 0.0f;
 		DirectX::XMVECTOR pointInPlane = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
-		ep1 = (DirectX::XMVectorGetX(pickRayInWorldSpacePos) * tri1A) + (DirectX::XMVectorGetY(pickRayInWorldSpacePos) * tri1B) + (DirectX::XMVectorGetZ(pickRayInWorldSpacePos) * tri1C);
-		ep2 = (DirectX::XMVectorGetX(pickRayInWorldSpaceDir) * tri1A) + (DirectX::XMVectorGetY(pickRayInWorldSpaceDir) * tri1B) + (DirectX::XMVectorGetZ(pickRayInWorldSpaceDir) * tri1C);
+		ep1 = (DirectX::XMVectorGetX(rayOrigin) * tri1A) + (DirectX::XMVectorGetY(rayOrigin) * tri1B) + (DirectX::XMVectorGetZ(rayOrigin) * tri1C);
+		ep2 = (DirectX::XMVectorGetX(rayDirection) * tri1A) + (DirectX::XMVectorGetY(rayDirection) * tri1B) + (DirectX::XMVectorGetZ(rayDirection) * tri1C);
 
 		//Make sure there are no divide-by-zeros
 		if (ep2 != 0.0f)
@@ -724,14 +723,14 @@ bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInW
 		if (t > 0.0f)    //Make sure you don't pick objects behind the camera
 		{
 			//Get the point on the plane
-			planeIntersectX = DirectX::XMVectorGetX(pickRayInWorldSpacePos) + DirectX::XMVectorGetX(pickRayInWorldSpaceDir) * t;
-			planeIntersectY = DirectX::XMVectorGetY(pickRayInWorldSpacePos) + DirectX::XMVectorGetY(pickRayInWorldSpaceDir) * t;
-			planeIntersectZ = DirectX::XMVectorGetZ(pickRayInWorldSpacePos) + DirectX::XMVectorGetZ(pickRayInWorldSpaceDir) * t;
+			planeIntersectX = DirectX::XMVectorGetX(rayOrigin) + DirectX::XMVectorGetX(rayDirection) * t;
+			planeIntersectY = DirectX::XMVectorGetY(rayOrigin) + DirectX::XMVectorGetY(rayDirection) * t;
+			planeIntersectZ = DirectX::XMVectorGetZ(rayOrigin) + DirectX::XMVectorGetZ(rayDirection) * t;
 
 			pointInPlane = DirectX::XMVectorSet(planeIntersectX, planeIntersectY, planeIntersectZ, 0.0f);
 
 			//Call function to check if point is in the triangle
-			if (PointInTriangle(tri1V1, tri1V2, tri1V3, pointInPlane))
+			if (PointInTriangle(vertex0, vertex1, vertex2, pointInPlane))
 			{
 				return true;
 			}
