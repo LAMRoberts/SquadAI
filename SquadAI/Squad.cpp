@@ -9,7 +9,7 @@ Squad::Squad(Renderer & renderer, UINT size, Formation form, int number)
 	CubeObject defaultCube(renderer);
 	cubeObjs.assign(squadSize, defaultCube);
 
-	// init cube pos's
+	// init cube IDs and pos's
 	for (int i = 0; i < squadSize; i++)
 	{
 		switch (formation)
@@ -20,7 +20,7 @@ Squad::Squad(Renderer & renderer, UINT size, Formation form, int number)
 			int row = i / s;
 			int col = i % s;
 
-			cubeObjs[i].translate((2 * row), 0.0f, (2 * col));
+			cubeObjs[i].translate((2.0f * row), 0.0f, (2.0f * col));
 
 			break;
 		}
@@ -29,7 +29,7 @@ Squad::Squad(Renderer & renderer, UINT size, Formation form, int number)
 			int row = i / formNo;
 			int col = i % formNo;
 
-			cubeObjs[i].translate((2 * row), 0.0f, (2 * col));
+			cubeObjs[i].translate((2.0f * row), 0.0f, (2.0f * col));
 
 			break;
 		}
@@ -38,7 +38,7 @@ Squad::Squad(Renderer & renderer, UINT size, Formation form, int number)
 			int row = i / formNo;
 			int col = i % formNo;
 
-			cubeObjs[i].translate((2 * col), 0.0f, (2 * row));
+			cubeObjs[i].translate((2.0f * col), 0.0f, (2.0f * row));
 
 			break;
 		}
@@ -65,4 +65,20 @@ Formation Squad::getFormation()
 int Squad::getFormationNumber()
 {
 	return formNo;
+}
+
+void Squad::setID(UINT ID)
+{
+	squadID = ID;
+}
+void Squad::setUnitIDs()
+{
+	for (int i = 0; i < squadSize; i++)
+	{
+		cubeObjs[i].setID(DirectX::XMINT2{ squadID, i });
+	}
+}
+UINT Squad::getSquadID()
+{
+	return squadID;
 }

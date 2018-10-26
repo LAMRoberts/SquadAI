@@ -1,11 +1,18 @@
 ﻿  main.cpp
-e:\uwe\y3\at\squadai\squadai\main.cpp(38): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(60): warning C4305: 'initializing': truncation from 'double' to 'float'
-e:\uwe\y3\at\squadai\squadai\main.cpp(85): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(93): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(95): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(113): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(124): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(434): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(436): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(111): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(119): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(121): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(139): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(150): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(498): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(500): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(548): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=__int64
+          ]
+e:\uwe\y3\at\squadai\squadai\main.cpp(607): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(612): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(615): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(664): warning C4018: '<': signed/unsigned mismatch
   SquadAI.vcxproj -> E:\UWE\Y3\AT\SquadAI\Debug\SquadAI.exe

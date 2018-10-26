@@ -2,6 +2,28 @@
 
 CubeObject::CubeObject(Renderer & renderer)
 {
+	vertexPositions = 
+	{
+	{ 0.5f, 0.5f, -0.5f },
+	{ 0.5f, -0.5f, -0.5f },
+	{ -0.5f, -0.5f, -0.5f },
+	{ -0.5f, 0.5f, -0.5f },
+	{ 0.5f, 0.5f, 0.5f },
+	{ 0.5f, -0.5f, 0.5f },
+	{ -0.5f, -0.5f, 0.5f },
+	{ -0.5f, 0.5f, 0.5f },
+	};
+
+	indices = 
+	{
+	  0, 2, 3, 0, 1, 2, 
+	  4, 1, 0, 4, 5, 1, 
+	  7, 5, 4, 7, 6, 5, 
+	  3, 6, 7, 3, 2, 6, 
+	  4, 3, 7, 4, 0, 3, 
+	  1, 6, 2, 1, 5, 6 
+	};
+
 	preUpdate(renderer);
 
 	pos = { 0.0f, 0.0f, 0.0f };
@@ -56,7 +78,7 @@ void CubeObject::scale(float x, float y, float z)
 void CubeObject::postUpdate(Renderer & renderer)
 {
 	// set world + transforms
-	world = oRotation * oTranslation * oScale;
+	world = oRotation * oScale * oTranslation;
 
 	renderer.updateWVP(updateWorldMatrix(renderer));
 }
@@ -71,3 +93,31 @@ DirectX::XMMATRIX CubeObject::updateWorldMatrix(Renderer & renderer)
 
 	return m;
 }
+
+void CubeObject::setID(DirectX::XMINT2 unitID)
+{
+	ID = unitID;
+}
+DirectX::XMINT2 CubeObject::getID()
+{
+	return ID;
+}
+
+std::vector<DirectX::XMFLOAT3>& CubeObject::getVertexPositions()
+{
+	return vertexPositions;
+}
+
+std::vector<DWORD>& CubeObject::getIndices()
+{
+	return indices;
+}
+
+DirectX::XMMATRIX & CubeObject::getWorldMatrix()
+{
+	world = oRotation * oScale * oTranslation;
+
+	return world;
+}
+
+
