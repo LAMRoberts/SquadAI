@@ -23,7 +23,7 @@ public:
 
 	// pathfinding methods
 
-	Node findCellInMap(DirectX::XMINT2 position);
+	Node findNodeInMap(DirectX::XMINT2 position);
 
 	void findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos);
 
@@ -32,6 +32,7 @@ public:
 	int inClosedList(Node node);
 	int inOpenList(Node node);
 
+	void setTraversable(DirectX::XMINT2 position);
 	bool isTraversable(Node node);
 
 private:
@@ -39,7 +40,8 @@ private:
 	// map members
 
 	std::vector<Node> map;			// this is our game map
-
+	int rowCount = 0;
+	int columnCount = 0;
 
 	// pathfinding members
 

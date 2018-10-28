@@ -70,13 +70,20 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	float clearColour[] = { 0.2f, 0.3f, 0.5f, 1.0f };
 	Renderer renderer(window, clearColour);
 
-	// create triangle
+	// create cube
 	Cube cube(renderer);
 
 	// finish init
 	renderer.setViewport();
 	renderer.createConstantBuffer();
 	UINT indices = cube.getIndexCount();
+
+	// create message
+	MSG msg = { 0 };
+
+	// cam Directions
+	std::vector<bool> camDirs;
+	camDirs.assign(6, false);
 
 	// tests for matrices
 	bool shifting = false;
@@ -101,28 +108,36 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	float squadXOffset = 0.0f;
 	float squadSeparation = 2.0f;
 
-	// create message
-	MSG msg = { 0 };
+	// init level with map size
+	DirectX::XMINT2 mapSize = { 10, 10 };
+	Level level(mapSize);
 
-	// cam Directions
-	std::vector<bool> camDirs;
-	camDirs.assign(6, false);
+	// init level cubes
+	CubeObject cObject(renderer);
+	std::vector<CubeObject> floor;
+	floor.assign(10000, cObject);
 
-	// set squad separation and ID numbers
+	// set floor cube positions
+	for (int row = 0; row < 100; row++)
+	{
+		for (int col = 0; col < 100; col++)
+		{
+			int i = (100 * row) + col;
+			floor[i].translate((float)col, -1.0f, (float)row);
+			floor[i].rotate(10000.0f, 0.0f, 1.0f, 0.0f);
+		}
+	}
+
+	// set squad separation, ID numbers and map position
 	for (int i = 0; i < squads.size(); i++)
 	{
-		// separation
+		// set squad offset
 		int unitsInRow = 0;
 		switch (squads[i].getFormation())
 		{
 		case Formation::SQUARE:
 		{
 			unitsInRow = sqrt(squads[i].getSquadSize());
-
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
 
 			break;
 		}
@@ -137,21 +152,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 				unitsInRow += 1;
 			}
 
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
-
 			break;
 		}
 		case Formation::COLUMNS:
 		{
 			unitsInRow = squads[i].getFormationNumber();
-
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
 
 			break;
 		}
@@ -160,20 +165,30 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			break;
 		}
 		}
+
+		// translate units and set map positions
+		for (int j = 0; j < squads[i].getSquadSize(); j++)
+		{
+			// translate units
+			squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
+
+			// get unit position
+			DirectX::XMFLOAT3 unitPos = squads[i].cubeObjs[j].position;
+
+			// convert squad world position to grid position
+			DirectX::XMINT2 unitPosition = { (int)unitPos.x, (int)unitPos.z };
+
+			// set grid square to impassible
+			level.setTraversable(unitPosition);
+		}
+
+		// update squadOffset
 		squadXOffset += unitsInRow + (unitsInRow - 1) + squadSeparation;
 
-		// IDs
+		// set IDs
 		squads[i].setID(i);
 		squads[i].setUnitIDs();
 	}
-
-	// init level with map size
-	DirectX::XMFLOAT2 mapSize;
-	mapSize.x = 100;
-	mapSize.y = 100;
-	Level level();
-
-
 
 #pragma endregion
 
@@ -503,7 +518,17 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		// move camera based on direction keys pressed
 		moveCamera(renderer, camDirs);
 
-		// move squads
+		// render floor
+		for (int i = 0; i < floor.size(); i++)
+		{
+			floor[i].preUpdate(renderer);
+			// thers nerthin here cuz they's not gerna moove anyhways
+			floor[i].postUpdate(renderer);
+
+			//renderer.draw(indices);
+		}
+
+		// move and render squads
 		for (int i = 0; i < squads.size(); i++)
 		{
 			for (int j = 0; j < squads[i].getSquadSize(); j++)

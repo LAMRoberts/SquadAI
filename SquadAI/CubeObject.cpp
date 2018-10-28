@@ -26,7 +26,7 @@ CubeObject::CubeObject(Renderer & renderer)
 
 	preUpdate(renderer);
 
-	pos = { 0.0f, 0.0f, 0.0f };
+	position = { 0.0f, 0.0f, 0.0f };
 
 	translate(0.0f, 0.0f, 0.0f);
 	rotate(0.0f, 0.0f, 0.0f, 1.0f);
@@ -49,11 +49,11 @@ void CubeObject::preUpdate(Renderer & renderer)
 
 void CubeObject::translate(float x, float y, float z)
 {
-	pos.x += x;
-	pos.y += y;
-	pos.z += z;
+	position.x += x;
+	position.y += y;
+	position.z += z;
 
-	oTranslation = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	oTranslation = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 }
 
 void CubeObject::rotate(float speed, float x, float y, float z)
@@ -119,5 +119,4 @@ DirectX::XMMATRIX & CubeObject::getWorldMatrix()
 
 	return world;
 }
-
 

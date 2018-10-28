@@ -26,13 +26,14 @@ public:
 	std::vector<DWORD> & getIndices();
 	DirectX::XMMATRIX & getWorldMatrix();
 
+	DirectX::XMFLOAT3 position;
+
 private:
 
 	std::vector<DirectX::XMFLOAT3> vertexPositions;
 	std::vector<DWORD> indices;
 
 	DirectX::XMINT2 ID;
-	DirectX::XMFLOAT3 pos;
 
 	DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
 	float rot = 0.01f;

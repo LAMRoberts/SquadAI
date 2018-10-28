@@ -6,12 +6,15 @@ Level::Level(DirectX::XMINT2 mapSizes)
 	Node node;
 	map.assign((mapSizes.x * mapSizes.y), node);
 
+	rowCount = mapSizes.y;
+	columnCount = mapSizes.x;
+
 	// loop each row
 	int x = 0;
-	for (int row = 0; row < mapSizes.x; row++)
+	for (int row = 0; row < mapSizes.y; row++)
 	{
 		// loop each col
-		for (int col = 0; col < mapSizes.y; col++)
+		for (int col = 0; col < mapSizes.x; col++)
 		{
 			// initiale each node in map
 			map[x].position = { row, col };
@@ -25,7 +28,7 @@ Level::Level(DirectX::XMINT2 mapSizes)
 	}
 }
 
-Node Level::findCellInMap(DirectX::XMINT2 position)
+Node Level::findNodeInMap(DirectX::XMINT2 position)
 {
 	for (int i = 0; i < map.size(); i++)
 	{
@@ -41,7 +44,7 @@ Node Level::findCellInMap(DirectX::XMINT2 position)
 void Level::findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos)
 {
 	Node startNode;
-	startNode.position = findCellInMap(startPos).position;
+	startNode.position = findNodeInMap(startPos).position;
 	startNode.parentPosition = { NULL, NULL };
 	startNode.fCost = NULL;
 
@@ -71,7 +74,7 @@ void Level::findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos)
 				{
 					if (/*(new path to neighbour is shorter)*/ false || inOpenList(neighbours[i]))
 					{
-						neighbours[i].fCost = NULL;
+						neighbours[i].fCost = /* new fCost*/ NULL;
 						neighbours[i].parentPosition = current.position;
 
 						if (!inOpenList(neighbours[i]))
@@ -86,7 +89,8 @@ void Level::findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos)
 
 	// now we have the target node as our last entry in the neighbours list
 	// we also have a parent for our target node, and each next parent save in neighbours list
-	// we just have to 
+	// we just have to run backwards through the chain to get the path to the objects current position
+	// then start the object moving towards its new direction until goal is reached or another target is selected
 }
 
 Node Level::findLowestFCost()
@@ -127,6 +131,13 @@ int Level::inOpenList(Node node)
 	}
 
 	return -1;
+}
+
+void Level::setTraversable(DirectX::XMINT2 position)
+{
+	int pos = (columnCount * position.y) + position.x;
+
+	map[pos].traversable = false;
 }
 
 bool Level::isTraversable(Node node)
