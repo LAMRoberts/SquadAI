@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Cube.h"
 #include "Squad.h"
+#include "Level.h"
 
 #pragma region Enums
 
@@ -165,6 +166,14 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		squads[i].setID(i);
 		squads[i].setUnitIDs();
 	}
+
+	// init level with map size
+	DirectX::XMFLOAT2 mapSize;
+	mapSize.x = 100;
+	mapSize.y = 100;
+	Level level();
+
+
 
 #pragma endregion
 
@@ -551,9 +560,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	}
 
 	// exit without a problem
-	return 0; 
+	return 0;
 }
 
+// function for camera movement
+// TODO: add camera rotation
 void moveCamera(Renderer & renderer, std::vector<bool> direction)
 {
 	float speed =  deltaTime * 0.00005f;
@@ -584,6 +595,7 @@ void moveCamera(Renderer & renderer, std::vector<bool> direction)
 	}
 }
 
+// return true if unit is highlighted
 bool isUnitSelected(DirectX::XMINT2 unitID)
 {
 	if (unitID.x == selected.x && unitID.y == selected.y)
@@ -596,6 +608,7 @@ bool isUnitSelected(DirectX::XMINT2 unitID)
 	}
 }
 
+// functions for picking
 void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::vector<Squad> & squads)
 {
 	GetCursorPos(&mousePos);
@@ -630,7 +643,6 @@ void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::v
 	}
 
 }
-
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & rayOrigin, DirectX::XMVECTOR & rayDirection)
 {
 	DirectX::XMVECTOR pRayOrigin = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -658,7 +670,6 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 	rayOrigin = XMVector3TransformCoord(pRayOrigin, rayWorldMatrix);
 	rayDirection = XMVector3TransformNormal(pRayDirection, rayWorldMatrix);
 }
-
 bool pick(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection, std::vector<DirectX::XMFLOAT3> & vertexArray, std::vector<DWORD> & indexArray, DirectX::XMMATRIX & worldMatrix)
 {
 	for (int i = 0; i < indexArray.size() / 3; i++)
@@ -739,7 +750,6 @@ bool pick(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection, std::vect
 
 	return false;
 }
-
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point)
 {
 	DirectX::XMVECTOR cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV3, triV2), DirectX::XMVectorSubtract(point, triV2));
