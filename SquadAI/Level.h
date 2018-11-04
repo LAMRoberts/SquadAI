@@ -6,13 +6,12 @@
 struct Node
 {
 	DirectX::XMINT2 position;
-	bool traversable;
+	bool isTraversable;
 
 	DirectX::XMINT2 parentPosition;
-	int gCost;
-	int hCost;
-	int fCost;
-
+	int gCost;	// how far from parent
+	int hCost;	// how far from end node
+	int fCost;	// gcost + hcost
 };
 
 class Level
@@ -21,19 +20,23 @@ public:
 	// map methods
 	Level(DirectX::XMINT2 mapSizes);
 
+	void setTraversable(DirectX::XMINT2 position);
+
 	// pathfinding methods
-
-	Node findNodeInMap(DirectX::XMINT2 position);
-
 	void findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos);
 
-	Node findLowestFCost();
+	std::vector<DirectX::XMINT2> findNeighbours(DirectX::XMINT2 current);
 
-	int inClosedList(Node node);
-	int inOpenList(Node node);
+	void setCosts(DirectX::XMINT2 node);
 
-	void setTraversable(DirectX::XMINT2 position);
-	bool isTraversable(Node node);
+	DirectX::XMINT2 findLowestFCost();
+
+	int inClosedList(DirectX::XMINT2 node);
+	int inOpenList(DirectX::XMINT2 node);
+
+	bool isTraversable(DirectX::XMINT2 node);
+
+	int nodePosToArrayPos(DirectX::XMINT2 node);
 
 private:
 
@@ -45,8 +48,19 @@ private:
 
 	// pathfinding members
 
-	bool completeRoute = false;		// true if we have a*ed to our goal
+	bool completeRoute = false;		// true if we have a*-ed to our goal
 
-	std::vector<Node> open;			// list of nodes to evaluate
-	std::vector<Node> closed;		// list of nodes evaluated
+	std::vector<DirectX::XMINT2> open;			// list of nodes to evaluate
+	std::vector<DirectX::XMINT2> closed;		// list of nodes evaluated
+	std::vector<DirectX::XMINT2> neighbours;	// list of nodes nearby
+
+	DirectX::XMINT2 startPosition;
+	DirectX::XMINT2 goalPosition;
+
+	const std::vector<DirectX::XMINT2> localPositions = 
+	{
+		{ -1, -1 }, { 0, -1 }, { 1, -1 },
+		{ -1,  0 },            { 1,  0 },
+		{ -1,  1 }, { 0,  1 }, { 1,  1 },
+	};
 };

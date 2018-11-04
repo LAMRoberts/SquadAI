@@ -1,17 +1,7 @@
-﻿  main.cpp
-e:\uwe\y3\at\squadai\squadai\main.cpp(132): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(140): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(170): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(522): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(532): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(534): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(582): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
-          with
-          [
-              _Rep=__int64
-          ]
-e:\uwe\y3\at\squadai\squadai\main.cpp(645): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(650): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(653): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(700): warning C4018: '<': signed/unsigned mismatch
+﻿  Level.cpp
+e:\uwe\y3\at\squadai\squadai\level.cpp(57): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\level.cpp(78): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\level.cpp(197): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\level.cpp(216): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\level.cpp(230): warning C4018: '<': signed/unsigned mismatch
   SquadAI.vcxproj -> E:\UWE\Y3\AT\SquadAI\Debug\SquadAI.exe

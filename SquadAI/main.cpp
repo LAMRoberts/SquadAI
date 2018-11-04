@@ -109,22 +109,21 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	float squadSeparation = 2.0f;
 
 	// init level with map size
-	DirectX::XMINT2 mapSize = { 10, 10 };
+	DirectX::XMINT2 mapSize = { 20, 20 };
 	Level level(mapSize);
 
 	// init level cubes
 	CubeObject cObject(renderer);
 	std::vector<CubeObject> floor;
-	floor.assign(10000, cObject);
+	floor.assign((mapSize.x * mapSize.y), cObject);
 
-	// set floor cube positions
-	for (int row = 0; row < 100; row++)
+	//	set floor cube positions
+	for (int row = 0; row < sqrt(floor.size()); row++)
 	{
-		for (int col = 0; col < 100; col++)
+		for (int col = 0; col < sqrt(floor.size()); col++)
 		{
-			int i = (100 * row) + col;
+			int i = (sqrt(floor.size()) * row) + col;
 			floor[i].translate((float)col, -1.0f, (float)row);
-			floor[i].rotate(10000.0f, 0.0f, 1.0f, 0.0f);
 		}
 	}
 
@@ -525,7 +524,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			// thers nerthin here cuz they's not gerna moove anyhways
 			floor[i].postUpdate(renderer);
 
-			//renderer.draw(indices);
+			renderer.draw(indices);
 		}
 
 		// move and render squads
