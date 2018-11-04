@@ -82,3 +82,8 @@ UINT Squad::getSquadID()
 {
 	return squadID;
 }
+
+void Squad::setPath(std::vector<DirectX::XMINT2> AStarredPath)
+{
+	AStarredPath = path;
+}

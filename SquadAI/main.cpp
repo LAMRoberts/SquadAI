@@ -50,6 +50,7 @@ void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::v
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir);
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, DirectX::XMMATRIX& worldSpace);
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point);
+DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & renderer, std::vector<CubeObject> & floor);
 
 #pragma endregion
 
@@ -87,7 +88,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 	// tests for matrices
 	bool shifting = false;
-	bool clicking = false;
+	int clicking = 0;
 	bool rotate = false;
 	std::vector<float> traDirs;
 	traDirs.assign(3, 0.0f);
@@ -178,7 +179,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			DirectX::XMINT2 unitPosition = { (int)unitPos.x, (int)unitPos.z };
 
 			// set grid square to impassible
-			level.setTraversable(unitPosition);
+			//level.setTraversable(unitPosition);
 		}
 
 		// update squadOffset
@@ -481,18 +482,45 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		}
 		else if (msg.message == WM_LBUTTONDOWN)
 		{
-			if (!clicking)
+			if (clicking == 0)
 			{
-				clicking = true;
+				clicking++;
 
 				selectObject(mousePos, window, renderer, squads);
 			}
 		}
 		else if (msg.message == WM_LBUTTONUP)
 		{
-			if (clicking)
+			if (clicking != 0)
 			{
-				clicking = false;
+				clicking--;
+			}
+		}
+		else if (msg.message == WM_RBUTTONDOWN)
+		{
+			if (clicking == 0)
+			{
+				clicking++;
+
+				// set temp position of selected unit
+				DirectX::XMINT2 squadPosition = { (int)squads[selected.x].cubeObjs[selected.y].position.x, (int)squads[selected.x].cubeObjs[selected.y].position.z };
+				DirectX::XMINT2 floorPosition = getfloorTile(mousePos, window, renderer, floor);
+
+				// if clicked on valid floor tile
+				if (floorPosition.x != -1 && floorPosition.y != -1)
+				{
+					// set path based on unit position annd floor tile clicked on
+					squads[selected.x].setPath(level.findRoute(squadPosition, floorPosition));
+
+					int a = 0;
+				}
+			}
+		}
+		else if (msg.message == WM_RBUTTONUP)
+		{
+			if (clicking != 0)
+			{
+				clicking--;
 			}
 		}
 
@@ -805,4 +833,26 @@ bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, Direc
 	}
 
 	return false;
+}
+
+DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & renderer, std::vector<CubeObject> & floor)
+{
+	GetCursorPos(&mousePos);
+	ScreenToClient(window.getHandle(), &mousePos);
+
+	DirectX::XMVECTOR rayOrigin = { 0 };
+	DirectX::XMVECTOR rayDirection = { 0 };
+
+	pickRayVector(renderer, mousePos.x, mousePos.y, rayOrigin, rayDirection);
+
+	for (int i = 0; i < floor.size(); i++)
+	{
+		// if clicked on
+		if (pick(rayOrigin, rayDirection, floor[i].getVertexPositions(), floor[i].getIndices(), floor[i].getWorldMatrix()))
+		{
+			return { (int)floor[i].position.x, (int)floor[i].position.z };
+		}
+	}
+
+	return { -1, -1 };
 }

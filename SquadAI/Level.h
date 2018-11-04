@@ -23,11 +23,11 @@ public:
 	void setTraversable(DirectX::XMINT2 position);
 
 	// pathfinding methods
-	void findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos);
+	std::vector<DirectX::XMINT2> findRoute(DirectX::XMINT2 startPos, DirectX::XMINT2 goalPos);
 
 	std::vector<DirectX::XMINT2> findNeighbours(DirectX::XMINT2 current);
 
-	void setCosts(DirectX::XMINT2 node);
+	DirectX::XMINT3 setCosts(DirectX::XMINT2 node);
 
 	DirectX::XMINT2 findLowestFCost();
 
@@ -37,6 +37,8 @@ public:
 	bool isTraversable(DirectX::XMINT2 node);
 
 	int nodePosToArrayPos(DirectX::XMINT2 node);
+
+	void cleanupRoute();
 
 private:
 

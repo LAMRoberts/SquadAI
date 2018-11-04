@@ -1,7 +1,20 @@
-﻿  Level.cpp
-e:\uwe\y3\at\squadai\squadai\level.cpp(57): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\level.cpp(78): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\level.cpp(197): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\level.cpp(216): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\level.cpp(230): warning C4018: '<': signed/unsigned mismatch
+﻿  main.cpp
+e:\uwe\y3\at\squadai\squadai\main.cpp(126): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(132): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(140): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(170): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(549): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(559): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(561): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(609): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=__int64
+          ]
+e:\uwe\y3\at\squadai\squadai\main.cpp(672): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(677): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(680): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(727): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(846): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(848): warning C4018: '<': signed/unsigned mismatch
   SquadAI.vcxproj -> E:\UWE\Y3\AT\SquadAI\Debug\SquadAI.exe
