@@ -51,6 +51,7 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, DirectX::XMMATRIX& worldSpace);
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point);
 DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & renderer, std::vector<CubeObject> & floor);
+DirectX::XMFLOAT3 findDistance(DirectX::XMFLOAT3 currentPos, DirectX::XMINT2 nextGridPos);
 
 #pragma endregion
 
@@ -179,6 +180,7 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			DirectX::XMINT2 unitPosition = { (int)unitPos.x, (int)unitPos.z };
 
 			// set grid square to impassible
+			//TODO: figure this shit out
 			//level.setTraversable(unitPosition);
 		}
 
@@ -511,8 +513,6 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 				{
 					// set path based on unit position annd floor tile clicked on
 					squads[selected.x].setPath(level.findRoute(squadPosition, floorPosition));
-
-					int a = 0;
 				}
 			}
 		}
@@ -558,14 +558,38 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		// move and render squads
 		for (int i = 0; i < squads.size(); i++)
 		{
+			int unitProcessing = 0;
+
 			for (int j = 0; j < squads[i].getSquadSize(); j++)
 			{
 				squads[i].cubeObjs[j].preUpdate(renderer);
 
-				// translation
-				if ((isUnitSelected(DirectX::XMINT2{ i, j }) && highlightingUnit) || (i == selected.x && !highlightingUnit))
-				{ // if specific unit is selected or entire unit is selected
-					squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
+				// new pathfinding movement
+				if (squads[i].getPath().size() != 0)
+				{
+					// set position to next node
+					DirectX::XMFLOAT3 difference = findDistance(squads[i].cubeObjs[j].position, squads[i].getPath()[squads[i].nextNode]);
+					
+					// if translating last unit in squad
+					if (unitProcessing == (squads[i].getSquadSize() - 1))
+					{
+						// update nextNode
+						squads[i].nextNode++;
+					}
+					
+					// translate unit to next node
+					squads[i].cubeObjs[j].translate(difference.x, difference.y, difference.z);
+				}
+
+				// old key movement
+				if (false)
+				{
+					// if specific unit is selected or entire unit is selected
+					if ((isUnitSelected(DirectX::XMINT2{ i, j }) && highlightingUnit) || (i == selected.x && !highlightingUnit))
+					{
+						// translate
+						squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
+					}
 				}
 
 				// rotation
@@ -855,4 +879,33 @@ DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & rende
 	}
 
 	return { -1, -1 };
+}
+
+DirectX::XMFLOAT3 findDistance(DirectX::XMFLOAT3 currentPos, DirectX::XMINT2 nextGridPos)
+{
+	// convert current position to int2
+	DirectX::XMINT2 current = { (int)currentPos.x, (int)currentPos.z };
+	DirectX::XMINT2 distance = { 0, 0 };
+
+	// get distance between points
+	if (current.x < nextGridPos.x)
+	{
+		distance.x = nextGridPos.x - current.x;
+	}
+	else
+	{
+		distance.x = current.x - nextGridPos.x;
+	}
+
+	if (current.y < nextGridPos.y)
+	{
+		distance.y = nextGridPos.y - current.y;
+	}
+	else
+	{
+		distance.y = current.y - nextGridPos.y;
+	}
+
+	// convert int2 back to float3
+	return { (float)distance.x, 0.0f, (float)distance.y };
 }

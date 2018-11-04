@@ -133,14 +133,13 @@ std::vector<DirectX::XMINT2> Level::findRoute(DirectX::XMINT2 startPos, DirectX:
 
 	// add goal to path
 	path.reserve(1);
-	path.insert(path.begin(), goalPosition);
 	path.insert(path.begin(), startPosition);
 
 	// set parent of added node
 	DirectX::XMINT2 parent = map[nodePosToArrayPos(closed[closed.size() - 1])].position;
 
 	// while parent is not start
-	while (parent.x != startPosition.x && parent.y != startPosition.y)
+	while (parent.x != startPosition.x || parent.y != startPosition.y)
 	{
 		// add parent to start of path
 		path.insert(path.begin() + 1, parent);
@@ -179,7 +178,7 @@ std::vector<DirectX::XMINT2> Level::findNeighbours(DirectX::XMINT2 current)
 				DirectX::XMINT3 c = setCosts(neighbour);
 				
 				// if new fCost (c) is less than previous fCost
-				if (c.z <= map[nodePosToArrayPos(neighbour)].fCost)
+				if (c.z < map[nodePosToArrayPos(neighbour)].fCost)
 				{
 					// set parent to current
 					map[nodePosToArrayPos(neighbour)].parentPosition = current;
