@@ -26,9 +26,11 @@ public:
 	UINT getSquadID();
 
 	void setPath(std::vector<DirectX::XMINT2> AStarredPath);
+	void resetPath();
 	std::vector<DirectX::XMINT2> getPath();
 
 	int nextNode = 0;
+	DirectX::XMFLOAT3 squadPosition = { 0.0f, 0.0f, 0.0f };
 
 private:
 

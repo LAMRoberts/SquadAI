@@ -98,14 +98,14 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 
 	// init squad prefab with units in formation
 	Squad squareSquad(renderer, 9, Formation::SQUARE, 0);
-	Squad rowsSquad(renderer, 6, Formation::ROWS, 3);
-	Squad columnsSquad(renderer, 8, Formation::COLUMNS, 4);
+	//Squad rowsSquad(renderer, 6, Formation::ROWS, 3);
+	//Squad columnsSquad(renderer, 8, Formation::COLUMNS, 4);
 
 	// init 3 squads of 9 units
 	std::vector<Squad> squads;
-	squads.assign(1, squareSquad);
-	squads.insert(squads.end(), rowsSquad);
-	squads.insert(squads.end(), columnsSquad);
+	squads.assign(3, squareSquad);
+	//squads.insert(squads.end(), rowsSquad);
+	//squads.insert(squads.end(), columnsSquad);
 
 	float squadXOffset = 0.0f;
 	float squadSeparation = 2.0f;
@@ -191,6 +191,8 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		squads[i].setID(i);
 		squads[i].setUnitIDs();
 	}
+
+	float updateTime = 0.0f;
 
 #pragma endregion
 
@@ -555,10 +557,15 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			renderer.draw(indices);
 		}
 
+		// update time
+		updateTime += deltaTime;
+		int unitProcessing = 0;
+
 		// move and render squads
 		for (int i = 0; i < squads.size(); i++)
 		{
-			int unitProcessing = 0;
+			// set squad position
+			squads[i].squadPosition = squads[i].cubeObjs[4].position;
 
 			for (int j = 0; j < squads[i].getSquadSize(); j++)
 			{
@@ -567,18 +574,37 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 				// new pathfinding movement
 				if (squads[i].getPath().size() != 0)
 				{
-					// set position to next node
-					DirectX::XMFLOAT3 difference = findDistance(squads[i].cubeObjs[j].position, squads[i].getPath()[squads[i].nextNode]);
-					
-					// if translating last unit in squad
-					if (unitProcessing == (squads[i].getSquadSize() - 1))
+					if (squads[i].nextNode != squads[i].getPath().size())
 					{
-						// update nextNode
-						squads[i].nextNode++;
+						if (updateTime > 1000000)
+						{
+							// get position of next path node
+							std::vector<DirectX::XMINT2> p = squads[i].getPath();
+							DirectX::XMINT2 pPos = p[squads[i].nextNode];
+
+							// set position to next node
+							DirectX::XMFLOAT3 difference = findDistance(squads[i].squadPosition, pPos);
+
+							// if translating last unit in squad
+							if (unitProcessing == (squads[i].getSquadSize() - 1))
+							{
+								// update nextNode
+								squads[i].nextNode++;
+
+								updateTime = 0;
+							}
+
+							// translate unit to next node
+							squads[i].cubeObjs[j].translate(difference.x, difference.y, difference.z);
+
+							unitProcessing++;
+						}
 					}
-					
-					// translate unit to next node
-					squads[i].cubeObjs[j].translate(difference.x, difference.y, difference.z);
+					else
+					{
+						squads[i].resetPath();
+						squads[i].nextNode = 0;
+					}
 				}
 
 				// old key movement
@@ -888,23 +914,8 @@ DirectX::XMFLOAT3 findDistance(DirectX::XMFLOAT3 currentPos, DirectX::XMINT2 nex
 	DirectX::XMINT2 distance = { 0, 0 };
 
 	// get distance between points
-	if (current.x < nextGridPos.x)
-	{
-		distance.x = nextGridPos.x - current.x;
-	}
-	else
-	{
-		distance.x = current.x - nextGridPos.x;
-	}
-
-	if (current.y < nextGridPos.y)
-	{
-		distance.y = nextGridPos.y - current.y;
-	}
-	else
-	{
-		distance.y = current.y - nextGridPos.y;
-	}
+	distance.x = nextGridPos.x - current.x;
+	distance.y = nextGridPos.y - current.y;
 
 	// convert int2 back to float3
 	return { (float)distance.x, 0.0f, (float)distance.y };

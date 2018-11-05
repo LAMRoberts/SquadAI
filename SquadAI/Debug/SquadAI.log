@@ -1,20 +1,25 @@
-﻿  main.cpp
+﻿  Squad.cpp
+e:\uwe\y3\at\squadai\squadai\squad.cpp(13): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\squad.cpp(19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+e:\uwe\y3\at\squadai\squadai\squad.cpp(76): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
 e:\uwe\y3\at\squadai\squadai\main.cpp(127): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 e:\uwe\y3\at\squadai\squadai\main.cpp(133): warning C4018: '<': signed/unsigned mismatch
 e:\uwe\y3\at\squadai\squadai\main.cpp(141): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
 e:\uwe\y3\at\squadai\squadai\main.cpp(171): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(549): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(559): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(563): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(633): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(551): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(565): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(570): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(659): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=__int64
           ]
-e:\uwe\y3\at\squadai\squadai\main.cpp(696): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(701): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(704): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(751): warning C4018: '<': signed/unsigned mismatch
-e:\uwe\y3\at\squadai\squadai\main.cpp(870): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
-e:\uwe\y3\at\squadai\squadai\main.cpp(872): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(722): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(727): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(730): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(777): warning C4018: '<': signed/unsigned mismatch
+e:\uwe\y3\at\squadai\squadai\main.cpp(896): warning C4244: 'argument': conversion from 'LONG' to 'float', possible loss of data
+e:\uwe\y3\at\squadai\squadai\main.cpp(898): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   SquadAI.vcxproj -> E:\UWE\Y3\AT\SquadAI\Debug\SquadAI.exe
