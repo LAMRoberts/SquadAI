@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Cube.h"
 #include "Squad.h"
+#include "Level.h"
 
 #pragma region Enums
 
@@ -49,6 +50,8 @@ void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::v
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & pickRayInWorldSpacePos, DirectX::XMVECTOR & pickRayInWorldSpaceDir);
 bool pick(DirectX::XMVECTOR pickRayInWorldSpacePos, DirectX::XMVECTOR pickRayInWorldSpaceDir, std::vector<DirectX::XMFLOAT3>& vertPosArray, std::vector<DWORD>& indexPosArray, DirectX::XMMATRIX& worldSpace);
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point);
+DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & renderer, std::vector<CubeObject> & floor);
+DirectX::XMFLOAT3 findDistance(DirectX::XMFLOAT3 currentPos, DirectX::XMINT2 nextGridPos);
 
 #pragma endregion
 
@@ -69,36 +72,13 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	float clearColour[] = { 0.2f, 0.3f, 0.5f, 1.0f };
 	Renderer renderer(window, clearColour);
 
-	// create triangle
+	// create cube
 	Cube cube(renderer);
 
 	// finish init
 	renderer.setViewport();
 	renderer.createConstantBuffer();
 	UINT indices = cube.getIndexCount();
-
-	// tests for matrices
-	bool shifting = false;
-	bool clicking = false;
-	bool rotate = false;
-	std::vector<float> traDirs;
-	traDirs.assign(3, 0.0f);
-	float traSpeed = 0.0f;
-	bool scale = false;
-
-	// init squad prefab with units in formation
-	Squad squareSquad(renderer, 9, Formation::SQUARE, 0);
-	Squad rowsSquad(renderer, 6, Formation::ROWS, 3);
-	Squad columnsSquad(renderer, 8, Formation::COLUMNS, 4);
-
-	// init 3 squads of 9 units
-	std::vector<Squad> squads;
-	squads.assign(1, squareSquad);
-	squads.insert(squads.end(), rowsSquad);
-	squads.insert(squads.end(), columnsSquad);
-
-	float squadXOffset = 0.0f;
-	float squadSeparation = 2.0f;
 
 	// create message
 	MSG msg = { 0 };
@@ -107,21 +87,58 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	std::vector<bool> camDirs;
 	camDirs.assign(6, false);
 
-	// set squad separation and ID numbers
+	// tests for matrices
+	bool shifting = false;
+	int clicking = 0;
+	bool rotate = false;
+	std::vector<float> traDirs;
+	traDirs.assign(3, 0.0f);
+	float traSpeed = 0.0f;
+	bool scale = false;
+
+	// init squad prefab with units in formation
+	Squad squareSquad(renderer, 9, Formation::SQUARE, 0);
+	//Squad rowsSquad(renderer, 6, Formation::ROWS, 3);
+	//Squad columnsSquad(renderer, 8, Formation::COLUMNS, 4);
+
+	// init 3 squads of 9 units
+	std::vector<Squad> squads;
+	squads.assign(3, squareSquad);
+	//squads.insert(squads.end(), rowsSquad);
+	//squads.insert(squads.end(), columnsSquad);
+
+	float squadXOffset = 0.0f;
+	float squadSeparation = 2.0f;
+
+	// init level with map size
+	DirectX::XMINT2 mapSize = { 20, 20 };
+	Level level(mapSize);
+
+	// init level cubes
+	CubeObject cObject(renderer);
+	std::vector<CubeObject> floor;
+	floor.assign((mapSize.x * mapSize.y), cObject);
+
+	//	set floor cube positions
+	for (int row = 0; row < sqrt(floor.size()); row++)
+	{
+		for (int col = 0; col < sqrt(floor.size()); col++)
+		{
+			int i = (sqrt(floor.size()) * row) + col;
+			floor[i].translate((float)col, -1.0f, (float)row);
+		}
+	}
+
+	// set squad separation, ID numbers and map position
 	for (int i = 0; i < squads.size(); i++)
 	{
-		// separation
+		// set squad offset
 		int unitsInRow = 0;
 		switch (squads[i].getFormation())
 		{
 		case Formation::SQUARE:
 		{
 			unitsInRow = sqrt(squads[i].getSquadSize());
-
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
 
 			break;
 		}
@@ -136,21 +153,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 				unitsInRow += 1;
 			}
 
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
-
 			break;
 		}
 		case Formation::COLUMNS:
 		{
 			unitsInRow = squads[i].getFormationNumber();
-
-			for (int j = 0; j < squads[i].getSquadSize(); j++)
-			{
-				squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
-			}
 
 			break;
 		}
@@ -159,12 +166,33 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 			break;
 		}
 		}
+
+		// translate units and set map positions
+		for (int j = 0; j < squads[i].getSquadSize(); j++)
+		{
+			// translate units
+			squads[i].cubeObjs[j].translate(squadXOffset, 0.0f, 0.0f);
+
+			// get unit position
+			DirectX::XMFLOAT3 unitPos = squads[i].cubeObjs[j].position;
+
+			// convert squad world position to grid position
+			DirectX::XMINT2 unitPosition = { (int)unitPos.x, (int)unitPos.z };
+
+			// set grid square to impassible
+			//TODO: figure this shit out
+			//level.setTraversable(unitPosition);
+		}
+
+		// update squadOffset
 		squadXOffset += unitsInRow + (unitsInRow - 1) + squadSeparation;
 
-		// IDs
+		// set IDs
 		squads[i].setID(i);
 		squads[i].setUnitIDs();
 	}
+
+	float updateTime = 0.0f;
 
 #pragma endregion
 
@@ -458,18 +486,43 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		}
 		else if (msg.message == WM_LBUTTONDOWN)
 		{
-			if (!clicking)
+			if (clicking == 0)
 			{
-				clicking = true;
+				clicking++;
 
 				selectObject(mousePos, window, renderer, squads);
 			}
 		}
 		else if (msg.message == WM_LBUTTONUP)
 		{
-			if (clicking)
+			if (clicking != 0)
 			{
-				clicking = false;
+				clicking--;
+			}
+		}
+		else if (msg.message == WM_RBUTTONDOWN)
+		{
+			if (clicking == 0)
+			{
+				clicking++;
+
+				// set temp position of selected unit
+				DirectX::XMINT2 squadPosition = { (int)squads[selected.x].cubeObjs[selected.y].position.x, (int)squads[selected.x].cubeObjs[selected.y].position.z };
+				DirectX::XMINT2 floorPosition = getfloorTile(mousePos, window, renderer, floor);
+
+				// if clicked on valid floor tile
+				if (floorPosition.x != -1 && floorPosition.y != -1)
+				{
+					// set path based on unit position annd floor tile clicked on
+					squads[selected.x].setPath(level.findRoute(squadPosition, floorPosition));
+				}
+			}
+		}
+		else if (msg.message == WM_RBUTTONUP)
+		{
+			if (clicking != 0)
+			{
+				clicking--;
 			}
 		}
 
@@ -494,17 +547,75 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 		// move camera based on direction keys pressed
 		moveCamera(renderer, camDirs);
 
-		// move squads
+		// render floor
+		for (int i = 0; i < floor.size(); i++)
+		{
+			floor[i].preUpdate(renderer);
+			// thers nerthin here cuz they's not gerna moove anyhways
+			floor[i].postUpdate(renderer);
+
+			renderer.draw(indices);
+		}
+
+		// update time
+		updateTime += deltaTime;
+		int unitProcessing = 0;
+
+		// move and render squads
 		for (int i = 0; i < squads.size(); i++)
 		{
+			// set squad position
+			squads[i].squadPosition = squads[i].cubeObjs[4].position;
+
 			for (int j = 0; j < squads[i].getSquadSize(); j++)
 			{
 				squads[i].cubeObjs[j].preUpdate(renderer);
 
-				// translation
-				if ((isUnitSelected(DirectX::XMINT2{ i, j }) && highlightingUnit) || (i == selected.x && !highlightingUnit))
-				{ // if specific unit is selected or entire unit is selected
-					squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
+				// new pathfinding movement
+				if (squads[i].getPath().size() != 0)
+				{
+					if (squads[i].nextNode != squads[i].getPath().size())
+					{
+						if (updateTime > 1000000)
+						{
+							// get position of next path node
+							std::vector<DirectX::XMINT2> p = squads[i].getPath();
+							DirectX::XMINT2 pPos = p[squads[i].nextNode];
+
+							// set position to next node
+							DirectX::XMFLOAT3 difference = findDistance(squads[i].squadPosition, pPos);
+
+							// if translating last unit in squad
+							if (unitProcessing == (squads[i].getSquadSize() - 1))
+							{
+								// update nextNode
+								squads[i].nextNode++;
+
+								updateTime = 0;
+							}
+
+							// translate unit to next node
+							squads[i].cubeObjs[j].translate(difference.x, difference.y, difference.z);
+
+							unitProcessing++;
+						}
+					}
+					else
+					{
+						squads[i].resetPath();
+						squads[i].nextNode = 0;
+					}
+				}
+
+				// old key movement
+				if (false)
+				{
+					// if specific unit is selected or entire unit is selected
+					if ((isUnitSelected(DirectX::XMINT2{ i, j }) && highlightingUnit) || (i == selected.x && !highlightingUnit))
+					{
+						// translate
+						squads[i].cubeObjs[j].translate(traDirs[X], traDirs[Y], traDirs[Z]);
+					}
 				}
 
 				// rotation
@@ -551,9 +662,11 @@ int CALLBACK WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLin
 	}
 
 	// exit without a problem
-	return 0; 
+	return 0;
 }
 
+// function for camera movement
+// TODO: add camera rotation
 void moveCamera(Renderer & renderer, std::vector<bool> direction)
 {
 	float speed =  deltaTime * 0.00005f;
@@ -584,6 +697,7 @@ void moveCamera(Renderer & renderer, std::vector<bool> direction)
 	}
 }
 
+// return true if unit is highlighted
 bool isUnitSelected(DirectX::XMINT2 unitID)
 {
 	if (unitID.x == selected.x && unitID.y == selected.y)
@@ -596,6 +710,7 @@ bool isUnitSelected(DirectX::XMINT2 unitID)
 	}
 }
 
+// functions for picking
 void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::vector<Squad> & squads)
 {
 	GetCursorPos(&mousePos);
@@ -630,7 +745,6 @@ void selectObject(POINT & mousePos, Window & window, Renderer & renderer, std::v
 	}
 
 }
-
 void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMVECTOR & rayOrigin, DirectX::XMVECTOR & rayDirection)
 {
 	DirectX::XMVECTOR pRayOrigin = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -658,7 +772,6 @@ void pickRayVector(Renderer & renderer, float mouseX, float mouseY, DirectX::XMV
 	rayOrigin = XMVector3TransformCoord(pRayOrigin, rayWorldMatrix);
 	rayDirection = XMVector3TransformNormal(pRayDirection, rayWorldMatrix);
 }
-
 bool pick(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection, std::vector<DirectX::XMFLOAT3> & vertexArray, std::vector<DWORD> & indexArray, DirectX::XMMATRIX & worldMatrix)
 {
 	for (int i = 0; i < indexArray.size() / 3; i++)
@@ -739,7 +852,6 @@ bool pick(DirectX::XMVECTOR rayOrigin, DirectX::XMVECTOR rayDirection, std::vect
 
 	return false;
 }
-
 bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, DirectX::XMVECTOR & triV3, DirectX::XMVECTOR & point)
 {
 	DirectX::XMVECTOR cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(triV3, triV2), DirectX::XMVectorSubtract(point, triV2));
@@ -771,4 +883,40 @@ bool PointInTriangle(DirectX::XMVECTOR & triV1, DirectX::XMVECTOR & triV2, Direc
 	}
 
 	return false;
+}
+
+DirectX::XMINT2 getfloorTile(POINT & mousePos, Window & window, Renderer & renderer, std::vector<CubeObject> & floor)
+{
+	GetCursorPos(&mousePos);
+	ScreenToClient(window.getHandle(), &mousePos);
+
+	DirectX::XMVECTOR rayOrigin = { 0 };
+	DirectX::XMVECTOR rayDirection = { 0 };
+
+	pickRayVector(renderer, mousePos.x, mousePos.y, rayOrigin, rayDirection);
+
+	for (int i = 0; i < floor.size(); i++)
+	{
+		// if clicked on
+		if (pick(rayOrigin, rayDirection, floor[i].getVertexPositions(), floor[i].getIndices(), floor[i].getWorldMatrix()))
+		{
+			return { (int)floor[i].position.x, (int)floor[i].position.z };
+		}
+	}
+
+	return { -1, -1 };
+}
+
+DirectX::XMFLOAT3 findDistance(DirectX::XMFLOAT3 currentPos, DirectX::XMINT2 nextGridPos)
+{
+	// convert current position to int2
+	DirectX::XMINT2 current = { (int)currentPos.x, (int)currentPos.z };
+	DirectX::XMINT2 distance = { 0, 0 };
+
+	// get distance between points
+	distance.x = nextGridPos.x - current.x;
+	distance.y = nextGridPos.y - current.y;
+
+	// convert int2 back to float3
+	return { (float)distance.x, 0.0f, (float)distance.y };
 }
